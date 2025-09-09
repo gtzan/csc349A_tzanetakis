@@ -1,0 +1,280 @@
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{algorithm,algorithmic}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Final Overview]{Final Overview}
+\date[2021]{2021}
+\author[R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+
+\begin{frame}{Final Logistics}
+\begin{itemize} 
+
+\item{The final exam is on Monday, December 13 from 2:00 to 5:00 p.m, McKinnon Gym Rows 23-32}
+
+\item{The final is 3 hours long}
+
+\item{The exam is closed book (see below regarding formula sheet)}
+
+\item{Only simple, scientific calculators (the ones you use for math classes) are allowed. If you bring anything programmable or with a large screen and or internet access you will not be allowed to use it.}
+
+\item{You can bring two single letter size (8.5 by 11) pieces of paper with formulas and notes (it can be double sided)}
+
+\end{itemize} 
+
+\end{frame} 
+
+\begin{frame}{Final Material} 
+\begin{itemize}
+\item{The material covers the entire term (cumulative) }
+\item{The first third material covered corresponds to part 1, chapters 1-4 of the textbook, lectures 1-7.} 
+\item{The second third material covered corresponds to parts 2, 3 and 5, chapters 4-7, 9 and 18 of the textbook, lectures 8-17.} 
+\item{The final third material covered corresponds to parts 6, and 7, chapters 21, 23, and 25 of the textbook.}
+\item{There are 9 questions weighted towards the last third (2 from 1st, 2 from 2nd, 5 from 3rd)} 
+\end{itemize}
+
+{\bf Note:} This does NOT include MATLAB.
+
+\end{frame} 
+
+\section{Part 1 - Modeling, Computers, and Error Analysis}
+
+\begin{frame}{Chapters 1 \& 2 - Mathematical Modeling and Programming}
+
+\begin{itemize}
+
+\item{Free-Falling Parachutist - Euler example}
+
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chapter 3 - Approximations and Round-off Error}
+
+\begin{itemize}
+
+\item{Absolute vs. Relative Error vs. Significant digits} 
+
+\item{True vs. Approximate Error}
+
+\item{Number systems}
+
+\item{Floating-point number system} 
+
+\item{Idealized floating-point arithmetic} 
+
+\item{Subtractive Cancellation}
+
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chapter 4 - Truncation Errors and Taylor Series}
+
+\begin{itemize}
+
+\item{Truncation Error}
+
+\item{Taylor's Theorem}
+
+\item{Stability and Condition} 
+
+\item{Condition number} 
+
+\end{itemize}
+
+\end{frame}
+
+\section{Part 2 - Roots of Equations}
+
+\begin{frame}{Chapter 5 - Bracketing Methods}
+
+\begin{itemize}
+
+\item{Bisection Method}
+
+\item{Order of convergence of the Bisection method} 
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chapter 6 - Open Methods}
+
+\begin{itemize}
+
+\item{Newton-Raphson Method}
+
+\item{Newton method convergence}  
+
+\item{Convergence Approximation}
+
+\item{Quadratic convergence of Newton's method} 
+
+\item{Secant method} 
+
+\item{Order of convergence of the Secant method} 
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chapter 7 - Roots of Polynomials}
+
+\begin{itemize}
+
+\item{Multiple Roots and the Multiplicity of a Zero} 
+
+\item{Roots of Polynomials} 
+
+\item{Horner's Algorithm (Nested Multiplication, Synthetic Division)} 
+
+\item{Polynomial Deflation and Root polishing} 
+
+\end{itemize}
+
+\end{frame}
+
+\section{Part 3 - Linear Algebraic Equations}
+
+\begin{frame}{Chapter 9 - Gauss Elimination}
+
+\begin{itemize}
+
+\item{Systems of Linear Equations}
+
+\item{Naive Gaussian Elimination}
+
+\item{Counting floating point operations} 
+
+\item{Gaussian Elimination with Partial Pivoting}
+
+\item{Determinant of $A$}
+
+\item{Gaussian Elimination with Scaling}
+
+
+\end{itemize}
+
+\end{frame}
+
+\section{Part 5 - Curve Fitting}
+
+\begin{frame}{Chapter 18 - Interpolation}
+
+\begin{itemize}
+
+\item{Polynomial interpolation} 
+
+\item{Lagrange Interpolating Polynomial} 
+
+\item{Error term of polynomial interpolation} 
+
+\item{The Runge Phenomenon}
+
+\item{Spline Interpolation} 
+
+\item{Quadratic \& Cubic Spline Interpolants}
+
+\end{itemize}
+
+\end{frame}
+
+\section{Part 6 - Numerical Differentiation and Integration}
+
+\begin{frame}{Chapter 21 - Newton-Cotes Integration}
+
+\begin{itemize}
+
+\item{Numerical Integration (Quadrature)} 
+
+\item{Newton-Cotes closed formulas} 
+
+\item{Degree of precision} 
+
+\item{Composite Newton-Cotes Formulas} 
+
+\item{Newton-Cotes Formulas with Unequal Segments} 
+
+\item{Open Newton-Cotes formulas} 
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Chapter 23 - Numerical Differentiation}
+
+\begin{itemize}
+
+\item{Forward, Backward and Central Finite-Divided Difference Formulas} 
+
+\item{High-Accuracy Differentiation Formulas} 
+
+
+\end{itemize}
+
+\end{frame}
+
+\section{Part 7 - Ordinary Differential Equations}
+
+\begin{frame}{Chapter 25 - Runge-Kutta Methods}
+
+\begin{itemize}
+
+\item{Ordinary Differential Equations}
+
+\item{Euler's Method}
+
+\item{Geometric Interpretation of Euler's Method}
+
+\item{Local vs. Global Error}
+
+\item{Higher-Order Taylor Series Methods}
+
+\item{Higher-Order Runge-Kutta Methods}
+
+\end{itemize}
+
+\end{frame}
+
+\end{document} 
+
+
+

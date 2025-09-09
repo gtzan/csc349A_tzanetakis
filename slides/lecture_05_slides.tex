@@ -1,0 +1,200 @@
+%% Fix Bayes example numbers 
+%% Fix KNN with different Ks figures 
+%% 
+%% 
+
+
+
+
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Leture 5]{Lecture 5}
+\date[2023]{2023}
+\author[R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+\section{Floating-point error}
+\begin{frame}{Rounding and chopping}
+
+There are two methods of representing a real number $p$ in floating-point: {\bf rounding} and {\bf chopping}. 
+
+For example let $b = 10$, $k=4$ and $p = 2/3$. Then: 
+
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|c|} 
+\hline
+         & p*            & absolute error & relative error \\
+\hline
+chopping & $0.6666x10^0$ & 0.0000666\dots & 0.0001 \\ 
+\hline
+rounding & $0.6667x10^0$ & 0.0000333\dots & 0.00005 \\  
+\hline 
+\end{tabular} 
+\caption{Rounding and chopping} 
+\end{table} 
+
+\end{frame}
+
+\begin{frame}
+{\bf Question:} What is the maximum possible relative error in the $k$-digit, base $b$, floating point representation $p^*$ of a real number $p$  with (a) {\bf chopping}? (b) {\bf rounding}?
+
+
+\end{frame} 
+
+\begin{frame}
+{\bf Answer for (a) chopping} Suppose $p \in [b^{t-1},b^t)$. How many values are in this interval? What is the distance between adjacent values?
+\vspace{3 in}
+
+
+\end{frame} 
+
+\begin{frame}
+{\bf Answer for (a) chopping} Upper bound on absolute error of $p^*$? Upper bound on the relative error?
+\vspace{3 in}
+
+
+\end{frame} 
+
+\begin{frame}{Unit round-off}
+
+\begin{definition}
+The quantity $b^{1-k}$ is called the {\bf unit round-off} (or the {\bf machine epsilon}). Note that it is independent of $t$ and the magnitude of $p$. The number $k-1$ indicates approximately the number of significant base $b$ digits in a floating-point approximation to a real number $p$. 
+\end{definition}
+\end{frame} 
+
+\begin{frame}
+{\bf Answer for (b) rounding} Upper bound on absolute error of $p^*$? Upper bound on the relative error?
+\vspace{3 in}
+
+
+\end{frame} 
+
+\section{Floating-point arithmetic} 
+
+\begin{frame}{Floating-point arithmetic} 
+
+Floating-point arithmetic is a simulation of real arithmetic.
+
+\begin{itemize}
+
+\item{We will use the notation {\it fl} to denote the floating-point representation
+of a real number $x$ as $fl(x)$.} 
+\item{Also, the floating-point representation of arithmetic operations such as: 
+\[
+fl(a+b), fl(a-b), fl(a \times b), fl(a/b) 
+\]
+\noindent
+where $a$ and $b$ are floating-point numbers.} 
+
+\item{The implementation of these floating-point operations (in either software or hardware) depends on several factors, and includes for example choices such as whether to use rounding or chopping and the number of significant digits used for floating-point addition and subtraction.}
+
+\end{itemize} 
+\end{frame}
+
+\begin{frame}{Idealized floating-point arithmetic} 
+
+\begin{definition} 
+For simplicity, we will consider only {\bf ``idealized'' floating-point arithmetic} which is defined as follows. Let $\bullet$ denote any of the basic arithmetic operations $+ - \times /$ and let $x$ and $y$ denote floating point numbers. $fl(x \bullet y)$ is obtained by performing {\bf exact arithmetic} on $x$ and $y$, and then {\bf rounding or chopping} this result to $k$ significant digits. 
+\end{definition} 
+\end{frame} 
+
+\begin{frame}{Note 1} 
+Although no actual digital computers or calculators implement floating-point arithmetic that way (it's too expensive as it would require a very long accumulator for doing addition and subtraction), idealized floating-point arithmetic: 
+\begin{itemize} 
+\item Behaves very much like any actual implementation 
+\item Is very simple to do in hand computations 
+\item Has accuracy almost identical to that of any implementation
+\end{itemize} 
+\end{frame}
+
+\begin{frame}{Note 2} 
+
+If $fl$ is applied to an arithmetic expression containing more than one arithmetic operation, then each of the arithmetic operations must be replaced by its corresponding floating-point operation.
+\vspace {2 in}
+
+\end{frame} 
+
+\begin{frame}{Note 3}
+With idealized floating-point arithmetic, the maximum relative error in $fl(x \bullet y)$ is the same as the maximum relative error in converting a real number $z$ to floating-point form. Thus, for a {\bf single} floating-point operation $+ - \times /$, the {\bf relative error is very small}: it is $ < b^{1-k}$ with chopping, or $\frac{1}{2} b^{1-k}$ (with rounding). However, the relative error in a floating-point computation {\bf might be large} if more than one floating-point operation is performed. 
+\end{frame} 
+
+\begin{frame}{Example}
+Let $b=10$, $k=4$, $x=0.1234 \times 10^0$, $y = -0.5508 \times 10^{-4}$, and $z=-0.1232 \times 10^0$. \\
+(a) Calculate $x+y$, $fl(x+y)$, and the relative erorr between the two.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example continued}
+(b) Now calculate $x+y+z$, $fl(x+y+z)$, and the relative erorr between the two.
+\vspace{3 in}
+\end{frame} 
+
+\section{Subtractive cancellation}
+
+\begin{frame}{Subtractive cancellation} 
+\begin{itemize}
+\item{Loss of significant digits due to the subtraction of {\it nearly} equal floating-point numbers.}
+\item{In the case of $+, \times$ and $/$, there is little significant loss of precision.}
+\item{However, this is not the case with subtraction, where close to all the significant digits may be lost.}
+\item{Handout 4 presents four examples of this and some of the ways of avoiding it.}
+\end{itemize} 
+\end{frame} 
+
+\begin{frame}{Example 1} 
+Using $b=10$, $k=4$ idealized floating-point arithmetic evaluate $fl(\sqrt{x^2+1}-x)$ at $x = 65.43$ using rounding.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 1 continued} 
+Can we solve this problem more accurately?
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 2} 
+Using $b=10$, $k=4$ idealized floating-point arithmetic evaluate $fl(x - \sin{x})$ at $x=0.01234$ using chopping.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 2 continued} 
+How do we solve this one more accurately?
+\vspace{3 in}
+\end{frame} 
+
+\end{document}
+

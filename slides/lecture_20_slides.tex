@@ -1,0 +1,317 @@
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{algorithm,algorithmic}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Lecture 20]{Lecture 20}
+\date[2023]{2023}
+\author[R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+\section{Higher-Order Taylor Series Methods}
+
+\begin{frame}{Higher-Order Taylor Series Methods}
+
+Higher order methods can be obtained by keeping more terms from the Taylor expansion.
+\begin{multline*}
+y(x_{i+1})=y(x_i)+hy'(x_i)+\frac{h^2}{2}y''(x_i)+\dotsm \\
+	+\frac{h^n}{n!}y^{(n)}(x_i)+\frac{h^{n+1}}{(n+1)!}y^{(n+1)}(\xi_i) \\
+=y(x_i)+hf(x_i,y(x_i))+\frac{h^2}{2}f'(x_i,y(x_i))+\dotsm \\
+	+\frac{h^n}{n!}f^{(n-1)}(x_i,y(x_i))+O(h^{n+1})
+\end{multline*}
+
+\end{frame}
+
+\begin{frame}{The Taylor Method of Order $n$}
+
+Dropping the $O(h^{n+1})$ remainder term in the above Taylor expansion, gives a numerical method
+\begin{multline*}
+y_{i+1}=y_i+hf(x_i,y_i)+\frac{h^2}{2}f'(x_i,y_i)+\dotsm 
+	+\frac{h^n}{n!}f^{(n-1)}(x_i,y_i)
+\end{multline*}
+for any integer $n \geq 1$.
+
+This is called {\bf the Taylor method of order $n$} (as its local truncation error is $O(h^{n+1})$, and thus its global truncation error is $O(h^n)$).
+
+Euler’s method is just the case when $n=1$.
+\end{frame}
+
+\begin{frame}{Example 1 - Taylor Method of Order 2}
+
+Solve the differential equation $y'=y-x^2+1$ with $y(0)=0.5$ and step size $h=0.2$ using the Taylor Method of order $n=2$.
+\[
+y_{i+1}=y_i + hf(x_i,y_i) + \frac{h^2}{2}f'(x_i,y_i)
+\]
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Example 1 continued}
+
+\end{frame}
+
+\section{Runge-Kutta Methods}
+
+\begin{frame}{Runge-Kutta Methods} 
+
+Advantage of Taylor methods of order $n$
+\begin{itemize}
+\item{global truncation error of $O(h^n)$ insures high accuracy (even for $n = 3, 4$ or $5$)}
+\end{itemize}
+Disadvantage
+\begin{itemize}
+\item{high order derivatives of $f(x,y(x))$ may be difficult and expensive to evaluate.}
+\end{itemize}
+\vspace{\baselineskip}
+{\bf Runge-Kutta methods} are higher order formulas (they can have any order $\geq 1$) that require function evaluations only of  $f(x,y(x))$, and not of any of its derivatives.
+
+\end{frame} 
+
+\begin{frame}{General Form of RK Methods} 
+
+Runge-Kutta methods are so-called one-step methods (as also are Euler’s method and all Taylor methods): that is, they are of the form
+\[
+y_{i+1}=y_i+h\Phi(x_i,y_i,h)
+\]
+for some (possibly very complicated) function $\Phi$.  
+
+That is, each computed approximation $y_{i+1}$ is computed using only the value $y_i$ at the previous grid point, along with the values of $x_i$, the step size $h$, and of course the function $f(x,y(x))$ that specifies the differential equation.
+
+\end{frame} 
+
+\begin{frame}{General Form of RK Methods of Order $m$} 
+
+A Runge-Kutta method of order $m$ is of the form:
+\[
+y_{i+1}=y_i+h\sum_{j=1}^m a_jk_j
+\]
+where the $a_j$ are constants and the $k_j$ are functions of the form,
+\begin{align*}
+k_1&=f(x_i,y_i) \\
+k_j&=f(x_i+\alpha_jh,y_i+h\sum_{l=1}^{j-1}\beta_{jl}k_l), \text{ for } 2 \leq j \leq m
+\end{align*}
+\end{frame} 
+
+\begin{frame}{Example 2 - Derive the general forms for $m=1,2,3,$ and $4$.}
+\end{frame}
+
+\begin{frame}{Example 2 - Derive the general forms for $m=1,2,3,$ and $4$.}
+\end{frame}
+
+\begin{frame}{The Goal given General Form of Order $m$} 
+Each of these formuals defines a whole class of Runge-Kutta methods of order $m$.
+
+Our goal is to take the formula for any fixed value of $m \geq 1$, and determine values for the parameters:
+\begin{itemize}
+\item{$\{a_1 \}$ when $m=1$}
+\item{$\{a_1,a_2,\alpha_2,\beta_{21} \}$ when $m=2$}
+\item{$\{a_1,a_2,a_3,\alpha_2,\alpha_3,\beta_{21},\beta_{31},\beta_{32} \}$ when $m=3$}
+\item{$\{a_1,a_2,a_3,a_4,\alpha_2,\alpha_3,\alpha_4,\beta_{21},\beta_{31},\beta_{32},\beta_{41},\beta_{42},\beta_{43} \}$ when $m=4$}
+\end{itemize}
+so that the resulting Runge-Kutta method has as high an order as possible (i.e., its local truncation error is as small as possible).
+
+\end{frame} 
+
+\begin{frame}{Deriving RK Methods of Order $m$} 
+
+This is accomplished by choosing the unknown parameters $\{a_i\},\{\alpha_i\}$, and $\{\beta_{ij}\}$ so that the Runge-Kutta formula
+\[
+y_{i+1}=y_i+h\sum_{j=1}^m a_jk_j
+\]
+is identical to the Taylor series expansion
+\[
+y_{i+1}=y_i+hy'_i+\frac{h^2}{2}y''_i+\frac{h^3}{6}y'''_i+\dotsm
+\]
+to as many terms as possible.
+
+\end{frame} 
+
+
+\section{Derivation of Runge-Kutta Methods}
+
+\begin{frame}{Derivation of First Order RK Method}  
+
+{\bf Case  m = 1}
+ 
+The only Runge-Kutta method of first order 
+\[
+y_{i+1}=y_i+ha_1f(x_i,y_i)
+\]
+is when $a_1=1$. That is, Euler’s method
+\[
+y_{i+1}=y_i+hf(x_i,y_i)
+\]
+For each value of $m \geq 2$, there are an infinite number of Runge-Kutta formulas, each one having local truncation error $O(h^{m+1})$ and thus global truncation error $O(h^m)$.
+
+
+\end{frame} 
+
+\begin{frame}{Taylor Polynomial with 2 Variables} 
+The derivation of Runge-Kutta methods and an understanding of why they work requires the Taylor polynomial for a function of 2 variables, but this Taylor polynomial is not required to use these methods to numerically approximate the solution of a differential equation.
+\begin{multline*}
+f(x+h,y+k)=f(x,y)+hf_x(x,y)+kf_y(x,y) \\
+	+\frac{h^2}{2}f_{xx}(x,y) + hkf_{xy}(x,y)+\frac{k^2}{2}f_{yy}(x,y) \\
+	+\frac{h^3}{6}f_{xxx}(x,y)+\frac{h^2k}{2}f_{xxy}(x,y)+\frac{hk^2}{2}f_{xyy}(x,y)+\frac{k^3}{6}f_{yyy}(x,y) \\
+	+ \dotsm
+\end{multline*}
+where $f_x \equiv \frac{\partial f}{\partial x}, f_{xy} \equiv \frac{\partial^2 f}{\partial x \partial y}$, etc.
+
+\end{frame} 
+
+\begin{frame}{Derivation of second order R-K} 
+
+{\bf Case  m = 2}
+\begin{align*} 
+y_{i+1} &=  y_i + a_1 h f(x_i, y_i)  \\
+   &+ a_2 h f(x_i + \alpha_2 h, y_i + \beta_{21}hf(x_i,y_i))  \\ 
+\end{align*} 
+Using the Taylor exapnsion for $f(x_i + \alpha_2 h, y_i + \beta_{21}hf(x_i,y_i))$, we get
+\begin{multline*} 
+y_{i+1} = y_i + a_1 h f(x_i, y_i)+ a_2 h [ f(x_i,y_i) +   \alpha_2hf_x(x_i,y_i) \\
++ \beta_{21} h f (x_i, y_i) f_y(x_i,y_i) + O(h^2) ] \\
+= y_i + [a_1 + a_2] h f(x_i, y_i) + h^2 [ a_2 \alpha_2 f_x(x_i,y_i) \\
++ a_2 \beta_{21}f(x_i,y_i)f_y(x_i,y_i)] + O(h^3) 
+\end{multline*} 
+
+
+\end{frame} 
+
+\begin{frame}{Derivation of Second Order RK Method}  
+
+But, also by Taylors Theorem 
+\begin{align*} 
+y_{i+1} =& y_i + h y'_i + \frac{h^2}{2} y''_i + O(h^3) \\
+	=& y_i + hf(x_i,y_i) + \frac{h^2}{2} f'(x_i,y_i) + O(h^3) \\
+           =& y_i + h f(x_i, y_i) + \frac{h^2}{2}[f_x(x_i,y_i) + f(x_i,y_i) f_y(x_i,y_i)] \\ 
+	+& O(h^3) 
+\end{align*} 
+
+\end{frame} 
+
+\begin{frame}{Derivation of Second Order RK Method}  
+In summary, the second order Runge-Kutta general form is
+\begin{align*} 
+y_{i+1} = y_i + [a_1 + a_2] h f(x_i, y_i) + h^2 [ a_2 \alpha_2 f_x(x_i,y_i) \\
++ a_2 \beta_{21}f(x_i,y_i)f_y(x_i,y_i)]
+\end{align*}
+and the second order Taylor expansion is
+\begin{align*} 
+y_{i+1} =& y_i + h f(x_i, y_i) + h^2[\frac{1}{2}f_x(x_i,y_i) + \frac{1}{2}f(x_i,y_i) f_y(x_i,y_i)]
+\end{align*}
+These two are equal only when \[a_1+a_2=1, a_2 \alpha_2=1/2,a_2 \beta_{21}=1/2\]
+\end{frame} 
+
+\begin{frame}{Examples - Heun's Method} 
+
+Let $a_1=a_2=1/2,\alpha_2=\beta_{21}=1$, which gives
+\[
+y_{i+1}=y_i+\frac{h}{2}\left[f(x_i,y_i)+f(x_i+h,y_i+hf(x_i,y_i))\right]
+\]
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Examples - Midpoint Method} 
+Let $a_1=0,a_2=1,\alpha_2=\beta_{21}=1/2$, which gives
+\[
+y_{i+1}=y_i+hf(x_i+\frac{h}{2},y_i+\frac{h}{2}f(x_i,y_i))
+\]
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 2} 
+Use Heun's Method to solve $y'=4e^{0.8x}-0.5y$ from $x=0$ to $x=4$ with $h=1$ and $y_0=2$.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 2 - Iterative refinement} 
+We can make this an iterative process by plugging our current approximation of $y_{i+1}$ into Heun's for the Euler approximation.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Derivation of Third Order RK Methods}  
+
+{\bf Case  m = 3}
+It can be shown that any solution of a certain system of 6 nonlinear equations in 8 unknowns gives a third-order Runge-Kutta Method.
+
+One common solution is
+\[
+a_1=\frac{1}{6}, a_2=\frac{2}{3}, a_3=\frac{1}{6}, \alpha_2=\frac{1}{2}, \alpha_3=1, \beta_{21}=\frac{1}{2}, \beta_{31}=-1, \beta_{32}=2
+\]
+which gives the third-order Runge-Kutta method
+\[
+y_{i+1}=y_i+\frac{h}{6}(k_1+4k_2+k_3)
+\]
+where
+\begin{align*}
+k_1 &= f(x_i,y_i) \\
+k_2 & = f\left(x_i+\frac{h}{2},y_i+\frac{h}{2}k_1\right) \\
+k_3 &= f(x_i+h,y_i-hk_1+2hk_2)
+\end{align*}
+\end{frame} 
+
+\begin{frame}{Derivation of Fourth Order RK Methods}  
+
+{\bf Case  m = 4}
+The 13 Runge-Kutta parameters are obtained by solving 11 nonlinear equations in 13 unknowns. One solution is called the {\bf "classical" Runge-Kutta method}, which has global truncation error of $O(h^4)$:
+
+\[
+y_{i+1}=y_i+\frac{h}{6}(k_1+2_2+2k_3+k_4)
+\]
+where
+\begin{align*}
+k_1 &= f(x_i,y_i) \\
+k_2 & = f\left(x_i+\frac{h}{2},y_i+\frac{h}{2}k_1\right) \\
+k_3 & = f\left(x_i+\frac{h}{2},y_i+\frac{h}{2}k_2\right) \\
+k_4 &= f(x_i+h,y_i+hk_3)
+\end{align*}
+\end{frame} 
+
+\begin{frame}{Classical Fourth Order RK Method Graphically}  
+
+\end{frame} 
+
+\begin{frame}{Example 3} 
+Use the classical 4th-order RK method with $h=0.2$ and $y(0)=0.5$ to solve $y'=y-x^2+1$.
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Example 3 continued} 
+
+\end{frame} 
+
+\end{document} 
+
+
+

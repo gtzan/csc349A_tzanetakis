@@ -1,0 +1,185 @@
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{fancyhdr}
+\usepackage{verbatim}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Lecture 7]{Lecture 7}
+\date[2023]{2023}
+\author[|R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+
+
+
+\section{Condition of a problem} 
+
+\begin{frame}{Introduction} 
+In analyzing the effects of roundoff errors in a computation to solve
+a problem, the concepts of ``stability'' and ``condition'' distinguish
+between whether the algorithm (the procedure for computing a solution
+to the problem) is satisfactory, or if the problem is such that no
+algorithm can be expected to reasonably solve the problem. The
+concepts involved are: 
+
+\begin{itemize} 
+\item {\bf stable/unstable algorithm} 
+\item {\bf well-conditioned/ill-conditioned problem}
+\end{itemize} 
+\end{frame}
+
+\begin{frame}{Condition} 
+
+\begin{definition} A problem whose (exact) solution can change greatly with small changes in the data defining the problem is called {\bf ill-conditioned}. 
+\end{definition} 
+
+Note: The condition of a problem has nothing to do with floating-point arithmetic or round-off error; it is defined in terms of exact computation. However, if a problem is ill-conditioned, it will be difficult (or impossible) to solve accurately using floating-point arithmetic. 
+
+
+\end{frame} 
+
+\begin{frame}{Condition Analysis}
+Original problem with exact arithmetic : 
+\[
+\mbox{data} \;\;\; \{d_i\} \rightarrow  \;\;\; \mbox{exact solution} \{r_i\}
+\] 
+Perturbed problem with exact arithmetic: 
+\[ 
+\mbox{data} \;\;\; \{\hat d_i\} = \{d_i+\varepsilon_i\} \rightarrow \;\;\; \mbox{exact solution} \{\hat r_i\};\;\; \mbox{where} \left |\frac{\varepsilon_i}{d_i}\right | \mbox{ small}. 
+\]
+
+
+If there exist small $\varepsilon_i$ such that $\{ \hat r_i \}$ are not close to 
+$\{ r_i \}$, then the problem is {\bf ill-conditioned}.  
+
+If $\{\hat r_i\} \approx \{ r_i \}$ for {\bf all} small $\varepsilon_i$, then the problem is {\bf well-conditioned}. 
+\end{frame} 
+
+\begin{frame}{Example 1 - Condition of a function}
+Suppose we want to solve $y=\frac{x}{1-x}$ for $x=0.93$. Show that this is ill-conditioned by perturbing $x$ by $0.01$, i.e. let $\varepsilon=0.01$.
+\vspace{3 in}
+\end{frame} 
+
+
+\begin{frame}{Example 2 - Condition of a linear system}
+Show the linear system $Hx=b$, with $H=\begin{bmatrix} 1 &	1/2 & 1/3 \\ 1/2	 & 1/3 & 1/4 \\ 1/3 & 1/4 & 1/5 \end{bmatrix}$, $b=\begin{bmatrix} 11/6 \\ 13/12 \\ 47/60 \end{bmatrix}$ and solution $x=\begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$, is ill-conditioned. We do this by perturbing $H$ and $b$ as follows. Let $\hat{H}=\begin{bmatrix} 1 &	1/2 & 0.333 \\ 1/2	 & 0.333 & 1/4 \\ 0.333 & 1/4 & 1/5 \end{bmatrix}$, $\hat{b}=\begin{bmatrix} 1.83 \\ 1.08 \\ 0.783 \end{bmatrix}$, and solve for $\hat{x}$. Using MATLAB I get that  $\hat{x}=\begin{bmatrix} 1.0895... \\ 0.48796... \\ 1.4910.... \end{bmatrix}$
+
+\vspace{3 in}
+\end{frame} 
+
+
+\begin{frame}{Condition number derivation} 
+The {\bf condition number} is another approach to analyzing the
+condition of a problem if the first derivative of the quantity $f(x)$ being computed can be determined. By the Taylor polynomial approximation of order $n=1$ for $f(x)$ expanded around $\tilde x$ we have: 
+\[
+f(x) \approx f(\tilde x) + f'(\tilde x)(x - \tilde x)
+\]
+\noindent 
+which implies that:  
+\[ 
+  \frac{f(x) - f(\tilde x)}{f(\tilde x)} \approx \frac{\tilde x f'( \tilde x)}{f(\tilde x)} \left( \frac{x-\tilde x}{\tilde x} \right) 
+\] 
+
+\noindent 
+If $\tilde x$ is some small pertubation of x, then the left hand side above is the {\it relative change} in $f(x)$ as $x$ is perturbed to $\tilde x$. 
+\end{frame} 
+
+\begin{frame}{Condition number}
+Thus, 
+\[ 
+\mbox{relative change in } f(x) \approx \left( \frac{\tilde xf'(\tilde x)}{f(\tilde x)} \right) \times \;\; \mbox{relative change in } x 
+\]
+
+The quantity $\frac{\tilde xf'(\tilde x)}{f(\tilde x)}$ is called a {\bf condition number} for the computation of $f(x)$. If this number is ``large'', then $f(x)$ is ill-conditioned; if this number is ``small'', then $f(x)$ is well-conditioned. 
+\end{frame} 
+
+\begin{frame}{Example 3 - Condition number}
+What is the condition number of $f(x)=\frac{x}{1-x}$ for $x=0.93$? 
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Example 4 - Condition number}
+What is the condition number of $f(x)=\tan{x}$ for $x \approx \pi/2$? Here, we cannot use $\pi/2$ directly so we use $\tilde{x}=1.01(\pi/2)$.
+\vspace{3 in}
+\end{frame}  
+
+\section{Stability of an algorithm} 
+
+\begin{frame}{Stability} 
+A computation is {\bf numerically unstable} if the uncertainty of the input values is greatly magnified by the numerical method. 
+
+\begin{definition} 
+An algorithm is said to be {\bf stable} (for a class
+of problems) if it determines a computed solution (using
+floating-point arithmetic) that is close to the exact solution of some
+(small) perturbation of the given problem.
+\end{definition} 
+
+{\bf Meaning of numerical stability:} the effect of uncertainty in the input data or of the floating-point artihmetic (the round-off error) is no worse that the effect of slightly perturbing the given problem, and solving the perturbed problem exactly. 
+
+
+
+\end{frame} 
+
+\begin{frame}{Stability analysis} 
+Suppose that for the original problem we have using floating-point computation: 
+\[
+\mbox{data} \;\;\; \{d_i\} \rightarrow  \;\;\; \mbox{computed solution} \{r_i\}
+\] 
+and we create a perturbed problem using exact computation: 
+\[ 
+\mbox{data} \;\;\; \{\hat d_i\} = \{d_i+\varepsilon_i\} \rightarrow \;\;\; \mbox{exact solution} \{\hat r_i\}
+\]
+\noindent 
+where $|\frac{\varepsilon_i}{d_i}|$ is small. 
+
+If there exist data $\hat d_i \approx d_i$ (small $\varepsilon_i$ for all $i$) such that $\hat r_i \approx r_i$ for all $i$, then the algorithm is said to be {\bf stable}. 
+
+If there exists {\bf no set} of data $\{ \hat d_i\}$ close to $\{ d_i \}$ such that $\hat r_i \approx r_i$ for all $i$, then the algorithm is said to be {\bf unstable} 
+\end{frame} 
+
+\begin{frame}{Example 5 - Stability analysis}
+Approximate $e^x$ where $x=0.5$, using $b=10$, $k=4$ floating-point arithmetic with rounding where we use the $n=3$ McLaurin approximation. Show that this method is stable.
+\vspace{3 in}
+\end{frame}  
+
+\begin{frame}{Example 5 - Stability analysis continued}
+
+\end{frame}  
+
+
+\end{document}
+

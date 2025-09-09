@@ -1,0 +1,227 @@
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{algorithm,algorithmic}
+\usepackage{gensymb}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Lecture 14]{Lecture 14}
+\date[2023]{2023}
+\author[R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+
+\section{Approximation Theory/Curve Fitting} 
+
+
+\begin{frame}{Introduction} 
+Our next topic is the study of how a given function can be approximated by another function 
+from a specified class of functions. The given function may be discrete or continuous. 
+
+Typically the approximating function exhibits some desired properties such as: 
+
+\begin{enumerate} 
+\item{Continuity} 
+\item{Easily differentiated} 
+\item{Easily integrated} 
+\item{Easily evaluated} 
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Introduction II} 
+Common classes of approximating functions: 
+\begin{enumerate} 
+\item{Polynomials} 
+\item{Piecewise polynomials (splines)}
+\item{Trigonometric sums (fourier series)}
+\end{enumerate} 
+
+We will also study criteria for what constitutes a ``good'' approximating function. 
+\end{frame} 
+
+\section{Polynomial interpolation} 
+
+\begin{frame}{Polynomial interpolation} 
+
+Recall that the general formula for an $n$th-order polynomial is
+\[
+P(x) = a_0 + a_1x + \dotsm + a_nx^n
+\]
+\noindent 
+For $n+1$ distinct data points there is one and only one order $n$ (or less) polynomial that passes through them all. That is,
+\begin{itemize}
+\item{only one line that passes through two points}
+\item{only one parabola that passes through three points, etc}
+\end{itemize}
+\vspace{2 in}
+\end{frame} 
+
+\begin{frame}{Polynomial interpolation II} 
+
+{\bf Polynomial Interpolation} consists of determining the unique $n$th-order polynomial that fits the $n+1$ data points in question.
+\begin{itemize}
+\item{Although the polynomial is unique there are different methods for finding it and different formats for expressing it.}
+\end{itemize}
+\vspace{3 in}
+\end{frame} 
+
+\begin{frame}{Polynomial interpolation III} 
+
+{\bf Formally:}
+Let $y=f(x)$ be any given function. For any value of $n \geq 0$ and any given values 
+$x_0, x_1, \dots, x_n$, let $y_i = f(x_i)$. 
+
+\noindent
+The {\bf polynomial interpolation problem} 
+is to determine a polynomial $P(x)$ of degree less than or equal to $n$ for which: 
+\[
+P(x_i) = y_i \;\;\; \mbox{for } i=0,1,\dots,n 
+\]
+
+\begin{itemize}
+\item{The set of $n+1$ data point $(x_i,y_i)$ may be the only functional values known (that is, $f(x)$ is 
+a {\bf discrete function}, which could occur for example with experimental data), or} 
+\item{$f(x)$ maybe be a known {\bf continuous function}, and the $n+1$ data points $(x_i, y_i)$ are a finite set of values with $y_i = f(x_i)$ (samples).}
+\end{itemize} 
+\end{frame} 
+
+\begin{frame}{Terminology}
+\begin{itemize} 
+\item{If $z$ is some value between 2 of the given values $x_i$ and if $P(z)$ is computed as an approximation to $f(z)$, then this approximation is said to be determined by polynomial {\bf interpolation}.} 
+\vspace{0.5 in}
+\item{On the other hand, if $z$ lies outside of the interval containing all of the values $x_i$ and if $P(z)$ is computed as an approximation to $f(z)$, then this approximation is said to be determined by polynomial {\bf extrapolation}.}
+\end{itemize}
+\vspace{1 in}
+\end{frame}
+
+\begin{frame}{Polynomial interpolation vs. Taylor approximation} 
+\begin{itemize}
+\item{An {\bf interpolating polynomial} and the {\bf Taylor polynomial} both determine polynomial approximations to $f(x)$. However, in general they are very different approximations to $f(x)$.} 
+\item{An interpolating polynomial uses the information: 
+
+\[
+y_0 = f(x_0), y_1 = f(x_1), \dots, y_n = f(x_n)
+\]} 
+\item{A Taylor polynomial uses the information: 
+\[
+f(x_0), f'(x_0), \dots, f^{(n)}(x_0)
+\]}
+\end{itemize}
+\vspace{1 in}
+\end{frame} 
+
+\section{Lagrange Interpolating Polynomial} 
+
+\begin{frame}{Lagrange Interpolating Polynomial}
+Given ${(x_i,f(x_i))}, 0 \leq i \leq n$, with all $x_i$ distinct, consider the function: 
+\begin{align*}
+P(x) &= \sum_{i=0}^{n} L_i(x) f(x_i) \\
+     &= L_0(x) f(x_0) + L_1(x)f(x_1) + \dots + L_n(x)f(x_n)
+\end{align*} 
+\noindent 
+where 
+\begin{align*}
+L_i(x) &= \frac{(x-x_0)(x-x_1)\dots(x-x_{i-1})(x-x_{i+1})\dots(x-x_n)}{(x_i-x_0)(x_i-x_1)\dots(x_i-x_{i-1})(x_i-x_{i+1})\dots(x_i-x_n)} \\
+   &= \prod_{j=0,j \neq i}^{n} \frac{x-x_j}{x_i-x_j}, \;\;\; \mbox{for } i=0,1,2,\dots,n 
+\end{align*}
+\end{frame}
+
+\begin{frame}{Example 1}
+Derive the general, order $n=1$, Lagrange interpolating polynomial.
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Example 2}
+Derive the general, order $n=2$, Lagrange interpolating polynomial.
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Example 2 continued}
+\end{frame}
+
+\begin{frame}{Lagrange Interpolating Polynomial II}
+Since each function $L_i(x)$ is a polynomial of order $n$ and $f(x_i)$ is a constant, $P(x)$ is a polynomial of order $\leq n$. 
+
+Also, since 
+\[
+L_i(x_i) = 1 \mbox{ and } L_i(x_j) = 0 \mbox{ if } j \neq i,
+\]
+\noindent 
+it follows that: 
+\[
+P(x_i) = f(x_i), \;\;\; \mbox{ for } i=0,1,2,\dots, n
+\]
+\noindent 
+that is, $P(x)$ is an interpolating polynomial for the given data. It is called the {\bf Lagrange interpolating polynomial}. 
+\end{frame}
+
+
+\begin{frame}{Example 3}
+Evaluate $\ln(2)$ using Lagrange polynomial interpolation, given that
+\begin{align*}
+\ln{1} &= 0 \\
+\ln 4 &= 1.386294 \\
+\ln 6 &= 1.791760
+\end{align*}
+\vspace{2 in}
+\end{frame}
+
+\begin{frame}{Example 3 continued}
+\end{frame}
+
+\begin{frame}{Example 4}
+A complete elliptic integral function of the first kind is defined by
+\[
+K(k) = \int_{0}^{\pi/2} \frac{dz}{\sqrt{1 - k^2\sin^2{z}}}
+\]
+Interpolate $K(\sin{65.5 \degree})$ where
+\begin{center}
+\begin{tabular}{c|c} 
+$\sin^{-1}{k}$ & $K(k)$ \\
+ \hline
+ $65\degree$ & $2.3088$ \\ 
+ $66\degree$ & $2.3439$ \\ 
+ $67\degree$ & $2.3809$ \\ 
+\end{tabular}
+\end{center}
+\vspace{2 in}
+\end{frame} 
+
+\begin{frame}{Example 4 continued}
+\end{frame}
+\end{document} 
+
+
+
