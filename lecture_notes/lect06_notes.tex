@@ -1,0 +1,267 @@
+\documentclass [titlepage,12pt,letter] {article}
+\pagestyle{myheadings}
+
+
+\usepackage{graphicx} 
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\usepackage{url} 
+\pagestyle{fancy}
+
+
+\fancyhead{}
+\fancyfoot{}
+			
+\lhead{CSC349A Lecture Notes}
+\rhead{Little, Rich}
+
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+
+
+
+\begin{document} 
+
+
+These are the lecture notes for CSC349A Numerical Analysis taught by
+Rich Little. They roughly correspond to
+the material covered in each lecture in the classroom but the actual
+classroom presentation might deviate significantly from them depending
+on the flow of the course delivery. They are provided as a reference to
+the instructor as well as supporting material for students who miss
+the lectures. They are simply notes to support the lecture so the text
+is not detailed and they are not thoroughly checked. Use at your own
+risk. 
+
+\section{Introduction} 
+
+{\bf Truncation errors} occur when some exact mathematical procedure is
+replaced by a finite approximation.
+
+\vspace{\baselineskip}
+
+{\bf Examples:} 
+\begin{itemize} 
+\item Approximation of a function by a finite number of terms in its Taylor series e.g. 
+\[ 
+e^{x} \approx 1 + x + \frac{x^2}{2} + \frac{x^3}{6}
+\]
+\item Approximation of a derivative by a finite difference: 
+\[
+\frac{dv}{dt}|_{t=t_i} \approx \frac{v(t_{i+1}) - v(t_{i})}{t_{i+1} - t_{i}}
+\]
+\item Approximation of a definite integral by a finite sum of function values 
+\[
+\int_{a}^{b} f(x)dx \approx \frac{b-a}{2} \left[ f(a) + f(b) \right]
+\]
+\end{itemize} 
+
+Taylor's Theorem is the fundamental tool for deriving and analyzing numerical
+approximation formulas in this course. It states that any ``smooth''
+function (one with a sufficient number of derivatives) can be
+approximated by a polynomial, and it includes an error (remainder)
+term that indicates how accurate the polynomial approximation
+is. Taylor's theorem also provides a means to estimate the value of a
+function $f(x)$ at some point $x_{i+1}$ using the values of $f(x)$ and
+its derivatives at some nearby point $x_{i}$.
+
+\newpage 
+{\bf Taylor's Theorem} 
+
+Let $n \geq 0$ and let $a$ be any constant. If $f(x)$ and its first $n+1$ derivatives are continuous on some interval containing $x$ and $a$, then: 
+
+\[
+ f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \dots + \frac{f^{n}(a)}{n!}(x-a)^{n} + R_n
+\] 
+where the remainder (or error) term is: 
+\[
+R_{n} = \frac{f^{(n+1)}(\xi)}{(n+1)!} (x-a)^{n+1} 
+\] 
+\noindent 
+and $\xi$ is some value between $x$ and $a$. Note that: 
+
+\[
+P_n(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \dots + \frac{f^{n}(a)}{n!}(x-a)^{n} 
+\] 
+\noindent 
+is a polynomial of degree $n$ in $x$, and is called the {\bf Taylor polynomial approximation of degree $n$} for f(x) expanded about $a$. $R_{n}$ is the {\bf truncation error} of this polynomial approximation to $f(x)$.  
+
+
+\section{Taylor Example 1} 
+
+Determine the Taylor polynomial approximation of order $n=3$ for 
+$f(x) = \ln(x+1)$ expanded about $a=0$ (McLaurin series when 
+$a=0$). 
+
+\begin{eqnarray} 
+f(x) =& \ln(x+1), & f(0) = 0 \\ 
+f'(x) =& \frac{1}{x+1}, & f'(0) = 1 \\ 
+f''(x) =& \frac{-1}{(x+1)^2}, & f''(0) = -1 \\ 
+f'''(x) =& \frac{2}{(x+1)^3}, & f'''(0) = 2 
+\end{eqnarray}
+
+Thus: 
+\begin{eqnarray*} 
+\ln(x+1) &=& f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \dots + \frac{f^{n}(a)}{n!}(x-a)^{n} \\ &=&  
+f(0) + f'(0) + \frac{f''(0)}{2} x^2 +\frac{f'''(0)}{6}x^{3} \\ 
+&=&  x -\frac{x^2}{2} + \frac{x^3}{3} 
+\end{eqnarray*}
+
+{\bf How accurate is this polynomial approximation?}
+
+Let $P_3(x) = x - \frac{x^2}{2} + \frac{x^{3}}{3}$. Since 
+$f^{(4)} (x) = \frac{-6}{(x+1)^4}$, for each value of $x$ there 
+exists a value $\xi$ such that: 
+\[ \ln(x+1) - P_{3}(x) = R_n = \frac{f^{(4)}(\xi)}{4!}x^4 = \frac{-x^4}{4(\xi +1)^4}
+\]
+\noindent 
+where $\xi$ is some number between $x$ and $a=0$. 
+
+For example, if $x=0.25$ then 
+\[
+ln(1.25) \approx 0.25 - \frac{(0.25)^2}{2} + \frac{(0.25)^3}{3} = 0.223958333 \dots 
+\]
+and the trunaction error of this approximation is: 
+\[
+R_3 = \frac{-(0.25)^4}{4(\xi+1)^4} = \frac{-1}{1024(\xi+1)^4}
+\]
+\noindent for some value of $\xi$ such that $0\leq \xi \leq 0.25$. 
+
+It is not possible to determine the value of $\xi$ that gives the exact 
+value of $R_3$, but it is possible to determine an {\bf upper bound} for 
+this truncation error: 
+
+\[
+|R_{3}| = \left| \frac{-1}{1024(\xi_1)^4}\right| \leq \frac{1}{1024(0+1)^4} = 0.0009765625
+\]
+
+This gives a guaranteed upper bound for the truncation error in the above approximation to $\ln(1.25)$. Note that the actual (absolute) error is: 
+
+\[
+|E_t| = |0.22314335 - 0.22395833| = 0.00081478
+\]
+
+Rather than just using the Taylor polynomial approximation to estimate the value of a function at one specified point, it is more common to use the polynomial approximation {\bf for an entire interval of values x}. In such a case, it is also desirable to be able to determine the accuracy (that is an upper bound for the error). For example, suppose that 
+
+\[
+\ln(x+1) \approx x - \frac{x^2}{2} + \frac{x^3}{3} 
+\]
+\noindent 
+for any value $x \in [0, 0.5]$. Then for any value of $x \in [0, 0.5]$, 
+\[
+| \ln(x+1) - P_3(x)| = \left| \frac{-x^4}{4(\xi +1)^4} \right | \leq \left | \frac{(0.5)^4}{4(0+1)^4}\right| = 0.015625
+\]
+\noindent 
+since $\max\limits_{0 \leq x \leq 0.5} |x^4| = (0.5)^4$ and, as $\xi$ lies between $0$ and $x$, $\max\limits_{0 \leq \xi \leq 0.5} \frac{1}{|(\xi + 1)^4|} = 1$. 
+
+To illustrate Taylor's approximation I plotted this functon $f(x)=ln(x+1)$ against three different approximations, $P_1(x)=x$, $P_2(x) = x - \frac{x^2}{2}$, and $P_3(x)=x-\frac{x^2}{2}+\frac{x^3}{3}$. The commands and plot are shown below:
+
+\begin{verbatim}
+>> x=[-1:0.05:2.5];
+>> fx = log(x+1);
+>> Px1 = x;
+>> Px2 = x - x.^2/2;
+>> Px3 = Px2 + x.^3/3;
+>> plot(x,fx,'r',x,Px1,'b',x,Px2,'g',x,Px3,'c')
+\end{verbatim}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.5]{lect5ex1}
+  \caption{Comparison of degrees of Approximation}
+  \label{fig:Lect5Ex1}
+\end{figure}
+
+
+\section{Taylor Example 2} 
+Let $x_{i+1} = x_{i} + h$ so that $h = x_{i+1} - x_{i}$. Then Taylor's theorem for $f(x)$ expanded about $x_{i}$, and evaluated at $x=x_{i+1}$ is: 
+
+\[ 
+f(x_{i+1}) = f(x_i) + f'(x_i) h + \frac{f''(x_i)}{2!}h^2 + \frac{f'''(x_i)}{3!}h^3 + \dots + \frac{f^{n}(x_i)}{n!}h^n + R_{n}  
+\] 
+\noindent 
+Letting $n=1$, this gives 
+\[
+f(x_{i+1}) = f(x_i) + f'(x_i) h + R_1
+\]
+\noindent 
+which implies that: 
+\[
+f'(x_i)  = \frac{f(x_{i+1})-f(x_i)}{h}-\frac{R_1}{h} 
+\]
+\noindent 
+where
+\[
+\frac{R_1}{h} = \frac{1}{h}\frac{f''(\xi)}{2} h^2 = \frac{f''(\xi)}{2} h
+\]
+\noindent
+This gives the first derivative approximation
+\[
+f'(x_i) \approx \frac{f(x_{i+1})-f(x_i)}{h}
+\] 
+\noindent 
+that was used in Chapter 1; it also gives the trunaction error of this finite difference approximation to the derivative, namely $-\frac{R_1}{h} = -\frac{f''(\xi)}{2}h$. As this is some constant times $h$, we say that this truncation error is $O(h)$. 
+
+
+\section{Taylor Example 3} 
+
+The Taylor polynomial approximation for $f(x) = e^x$ expanded about $a=0$ is 
+
+\[ 
+e^x \approx 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots + \frac{x^n}{n!} 
+\]
+\noindent 
+It is clear from: 
+\[
+R_n = \frac{f^{(n+1)} (\xi)}{(n+1)!}(x-a)^{n+1} 
+\]
+\noindent 
+that the truncation error of any Taylor polynomial approximation is small when $x$ is close to $a$ (note that $R_n=0$ when $x=a$) and will increase as $x$ gets further away from $a$. Also, as $n$ increases, the Taylor polynomial approximations become better and better approximations to $f(x)$, provided of course that $f^{(n+1)}(x)$ is bounded on some interval containing $x$ and $a$. 
+
+\section{Additional material}
+In addition to the material in the handouts I briefly mentioned that 
+there is an alternative form for the remainder $R_n$ which can also be
+defined as: 
+
+\begin{equation} 
+R_n = \int^{x}_{a} \frac{(x-t)^n}{n!} f^{(n+1)}(t)dt 
+\end{equation} 
+
+\noindent 
+This form is called the {\it integral form}. The form we covered in
+class with the unkown value $\xi$ is referred to as the {\it
+  derivative} or {\it Lagrange form} of the remainder named after the
+famous mathematician {\it Joseph-Louis Lagrange (1736-1813)} who
+characterized the remainder term and realized the fundamental
+importance of Taylor's theorem in calculus. The derivation is based on
+the first theorem of mean for integrals which states that if a
+function $f$ is continuous and integrable on an interval containing 
+$\alpha$ and $x$, then there exists a point $\xi$ between $\alpha$
+and $x$ such that: 
+
+\begin{equation} 
+\int_{\alpha}^{x} g(t)dt = g(\xi)(x-\alpha) 
+\end{equation} 
+
+
+
+
+
+\bibliographystyle{IEEEbib} 
+\bibliography{csc349a} 
+
+\end{document} 
+
+
+
+
+
+
+
+
+
+
+

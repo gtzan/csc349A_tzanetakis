@@ -1,0 +1,295 @@
+\documentclass [titlepage,12pt,letter] {article}
+\pagestyle{myheadings}
+
+
+
+\usepackage{fancyhdr}
+\usepackage{url} 
+\pagestyle{fancy}
+
+
+\fancyhead{}
+\fancyfoot{}
+			
+\lhead{CSC349A Lecture Notes}
+\rhead{Little, Rich}
+
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+
+
+
+\begin{document} 
+
+
+These are the lecture notes for CSC349A Numerical Analysis taught by
+Rich Little. They roughly correspond to
+the material covered in each lecture in the classroom but the actual
+classroom presentation might deviate significantly from them depending
+on the flow of the course delivery. They are provided as a reference to
+the instructor as well as supporting material for students who miss
+the lectures. They are simply notes to support the lecture so the text
+is not detailed and they are not thoroughly checked. Use at your own
+risk.
+    
+\section{Approximations and Measuring Errors} 
+
+There are several types of different erros that can arise in
+engineering scientific applications and it is important to understand
+both their sources and effects when studying numerical methods. 
+
+\begin{itemize} 
+\item{{\bf Formulation or modeling error}  arises because of
+    incomplete mathematical models. For example the simplified
+    parachutist model we described will never exactly predict the
+    motion of a real parachutist.}
+
+\item{{\bf Data uncertainty/inherent erorr} Noisy data due to inexact
+    measurements or observation.}
+
+\item{{\bf Truncation error (Chapter 4)} results from using inexact approximations
+    instead of an exact mathematical procedure such as the errors
+    between the Euler method numerical procedure for predicting
+    velocity versus the analytical solution obtained through
+    differential calculus.}
+
+\item{{\bf Roundoff error (Chapter 3)} is due to the fixed, finitite
+    precision representations used to represent real/complex numbers
+    in computers.}
+
+
+\end{itemize} 
+
+
+We start by discussing different ways of measuring error. If $p$
+denotes the true (exact) value of some quantity, and $p^{*}$ denotes
+some approximation to $p$ then the {\bf absolute true error} is
+defined as: 
+
+\begin{equation} 
+|E_{t}| = | p - p ^{*}|
+\end{equation} 
+
+The absolute error only makes sense if you have a sense of the
+magnitude of $p$, the quantity you are approximating. For example 
+consider $p = 1234321$ and $p* = 1234000$, the $|E_{t}|$ = 321 seems
+large, although $p*$ is quite accurate and agrees with $p$ to 4
+significant digits. In constrast, if $p = 0.001234$ and $p* =
+0.001111$, then $|E_t|$ = 0.000123 seems small, although $p*$ is not
+very accurate and agrees with $p$ to only 1 significant digit. 
+
+A better approach is to introduce the concept of relative error, in
+which the magnitude of the exact value $p$ is used to ``normalize''
+the error. More specifically the {\bf relative error} is defined as: 
+
+\begin{equation} 
+|\varepsilon_{t}| = \frac{|p - p^{*}|}{|p|} = |1 - \frac{p^{*}}{p}| 
+\end{equation} 
+
+
+The {\it significant digits} of a number are those that can be used
+with confidence. It is a discrete way of measuring error in
+approximations in contrast to the relative error which is a continuous
+way of measuring error in approximation. The relative error also
+indicates the number of correct significant digits in an approximation
+$p^*$. For example for $p = \pi = 3.14159265 \dots$ :
+
+\begin{table} 
+\begin{tabular}{|c|c|l|}
+\hline 
+approximations & number of correct significant digits & relative error
+\\
+\hline
+3.1                   & 2       & 0.013 \\
+\hline 
+3.14                 & 3       & 0.00051 \\ 
+\hline 
+3.141               & 4       & 0.00019 \\ 
+\hline 
+3.1415             & 5       & 0.000029 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+
+Frequently it is useful to relate the relative error to the number of
+correct significant digits. This can be done with the
+following: If
+
+\begin{equation} 
+|\varepsilon_{t} | < 5 \times 10 ^ {-n} 
+\end{equation} 
+
+\noindent 
+then $p*$ approximates $p$ to {\bf $n$ significant digits}. 
+
+In order to calculate the relative or absolute error of a particular
+quantity we need to know the value of the approximation $p^*$ as well
+as the true value $p$. In many cases we don't know the true value. 
+In fact numerical methods in engineering are used when we don't know
+the true value otherwise we could just simply use it instead of
+computing a numeric approximation. The main reason these error
+measures are useful is that they can give us good estimates of how
+well a particular method works for the case where we have exact
+results increasing our confidence that they will work well for the
+cases for which there are no exact results. 
+
+There are many algorithms in numerical methods that operate in an
+iterative function in which an estimate of solution is used to compute 
+a better estimate and the process is repeated until some convergence
+criterion is met. In this cases it is common to use our best current
+estimate of the true value (i.e the previous estimate) to compute the
+error compared to the current estimate. 
+
+In this case of iterative algorithms we can use the following
+approximation to the relative errror: 
+
+\begin{equation} 
+|\varepsilon_{a}| = \frac{|p_i - p_{i-1}|}{p_{i}} 
+\end{equation} 
+
+Similarly to the above relationship we can use the following relation to estimate the number of
+significant digits for the relative error in iterative algorithms: If
+
+\begin{equation} 
+|\varepsilon_{a}| < 0.5 \times 10^{-n}
+\end{equation} 
+
+\noindent
+then $p_i$ approximates $p$ to {\it at least} $n$ significant digits.
+
+\section{Example of Error Estimate in Iterative Methods} 
+
+These concepts will hopefully become clearer through an example
+(Example 3.2 pages 58-59 of the 6th edition and 61-62 of the 7th
+edition). 
+
+Mathematicians like to represent functions by infinite series. For
+example the exponential function can be computed using: 
+
+\begin{equation} 
+e^{x} = 1 + x + \frac{x^2}{2} + \frac{x^3}{3!} + \dots + \frac{x^{n}}{n!}
+\end{equation} 
+
+\noindent 
+As more terms are added to the series the approximation becomes better
+and better. This is called a McLaurin series expansion. Let $p_{0}
+=1$, $p_{1} = 1 + x$, $p_{2} = 1 + x + \frac{x^2}{2!}$ and so on. 
+
+We can use this series approximation at different levels of precision 
+to compute the value of $e^x$ for $x = 0.5$. We can use the true value 
+$p = e^{0.5} = 1.648721 ..$ to compute the true relative error
+$|\varepsilon_{t}|$. 
+
+
+\begin{table} 
+\begin{tabular}{|c|l|l|l|} 
+\hline 
+i & $p_{i}$ & $|\varepsilon_{t}| = \frac{|e^{0.5} - p_{i}|}{|e^{0.5}|}$ &
+$|\varepsilon_{a}| = \frac{|p_{i} - p_{i-1}|}{|p_{i}|}$ \\
+\hline 
+0 & 1 & 0.393 &  \\ 
+1 & 1.5 & 0.0902 & 0.333 \\ 
+2 & 1.625 & 0.0144 & 0.0769 \\ 
+3 & 1.645833 & 0.00175 & 0.0127 \\ 
+4 & 1.6484375 & 0.000172 & 0.00158 \\ 
+5 & 1.6486979 & 0.0000142 & 0.000158 \\ 
+\hline 
+
+
+\end{tabular} 
+\end{table} 
+
+
+Note that the value of $|\varepsilon_t|$, which can only be computed if
+we know the true (exact) answer $p$, can be used to estimate the
+number of correct significant digits in each approximation. For
+example: For $p_{2}$ we have $0.0144 < 5 \times 10^{-2}$ so the 
+approximation $p_{2} = 1.625$ has at least 2 correct significant digits. For
+$p_{4}$ we have $0.000172 < 5 \times 10^{-4}$ and therefore 
+$p_{4} = 1.6484375$ has at least 4 correct significant digits. 
+
+In practice, if a sequence of approximations to some unknown value 
+is computed using an iterative algorithm, (we will use several such
+algorithms during this course), then the exact relative error
+$|\varepsilon_{t}|$ can not be computed. However, the relative error in
+each approximation $p_i$ can be approximated by
+$|\varepsilon_{a}|$ and can be used to estimate conservatively the
+number of correct significant digits. For examples for i=5 in the
+table above we have $|\varepsilon_{a}| = 0.000158 < 0.5 \times 10^{-3}$ 
+implying that $p_{5} = 1.6486979$ has at least 3 correct significant
+digits (notice that in fact it has 4 which means this is a
+conservative estimate). 
+
+Armed with the syntax and concepts we learned for programming in
+MATLAB it is straightforward to write a MATLAB function to compute 
+the table above showing how the true and approximate relative error 
+decrease as more terms are added to the series. Here is the
+corresponding code of the function {\it mclaurin\_exponential}: 
+
+\begin{verbatim} 
+function [ em ] = mclaurin_exponential( x, n )
+% mclaurin_exponential:
+%     Prints the true relative error and the approximate
+%     relative error when approximating e with a 
+%     McLaurin series. The code corresponds to example
+%     3.2 of the textbook and also is covered in handout 2.
+
+    em = 1;         % the approximation
+    e = exp(1);     % the true value
+    et = abs(e^(x) - em) / e^(x);   % true rel error
+    ea = 0;                             % approx rel error
+    prev_em = 0;
+    i = 0;
+    fprintf('i \t pi \t\t true error \t approximation error\n');
+    fprintf('%d \t %4.6f \t %4.6f \t %4.6f\n', i, em, et, ea);
+    
+    for i = 1:n
+        prev_em = em;               % store prev approx
+        em = em + (x^i / factorial(i));
+        et = abs(e^(x) - em) / e^(x);   % true rel error
+        ea = abs((em - prev_em) / em);      % approx rel error
+        fprintf('%d \t %4.6f \t %4.6f \t %4.6f\n', i, em, et, ea);
+    end
+end
+\end{verbatim} 
+
+
+To produce the table we simply provide the value of $x$ and the number
+of series terms to use for the approximation (or number of iterations)
+$n$. 
+
+\begin{verbatim} 
+>> mclaurin_exponential(0.5, 6)
+i 	 pi 		 true error 	 approximation error
+0 	 1.000000 	 0.393469 	 0.000000
+1 	 1.500000 	 0.090204 	 0.333333
+2 	 1.625000 	 0.014388 	 0.076923
+3 	 1.645833 	 0.001752 	 0.012658
+4 	 1.648438 	 0.000172 	 0.001580
+5 	 1.648698 	 0.000014 	 0.000158
+6 	 1.648720 	 0.000001 	 0.000013
+
+ans =
+
+   1.648719618055555
+\end{verbatim} 
+
+
+\bibliographystyle{IEEEbib} 
+\bibliography{csc349a} 
+
+\end{document} 
+
+
+
+
+
+
+
+
+
+
+

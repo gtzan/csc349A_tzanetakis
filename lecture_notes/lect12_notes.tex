@@ -1,0 +1,392 @@
+\documentclass [titlepage,12pt,letter] {article}
+\pagestyle{myheadings}
+
+\usepackage{enumerate}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{graphicx} 
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\usepackage{url} 
+\usepackage{amsmath}
+\usepackage{algorithm} 
+\usepackage{algorithmic}
+\pagestyle{fancy}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\fancyhead{}
+\fancyfoot{}
+			
+\lhead{CSC349A Lecture Notes}
+\rhead{Little, Rich}
+
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+
+
+
+\begin{document} 
+
+
+These are the lecture notes for CSC349A Numerical Analysis taught by
+Rich Little. They roughly correspond to
+the material covered in each lecture in the classroom but the actual
+classroom presentation might deviate significantly from them depending
+on the flow of the course delivery. They are provide as a reference to
+the instructor as well as supporting material for students who miss
+the lectures. They are simply notes to support the lecture so the text
+is not detailed and they are not thoroughly checked. Use at your own
+risk. They are complimentary to the handouts. Many thanks to all the
+guidance and materials I received from Dale Olesky who has taught this
+course for many years and George Tzanetakis. 
+
+
+\section{Systems of Linear Equations}
+
+
+\begin{itemize}
+\item{Math background pg. 235-245}
+\item{Review if necessary}
+\begin{itemize}
+\item{matrix notation}
+\item{transpose}
+\item{matirx operations - addition and multiplication}
+\item{inverses, determinants}
+\item{triangular matirces}
+\end{itemize}
+\item{For motivations in Engineering see Chapter 12 Case Studies - pg. 325-336}
+\begin{itemize}
+\item{Steady-state analysis of systems of reactors}
+\item{Analysis of a statically determinate truss}
+\item{Currents and voltages in resistor circuits}
+\item{Spring-mass systems}
+\end{itemize}
+\end{itemize}
+
+
+\section{Naive Gaussian Elimination}
+
+
+{\bf Notation} for a system of $n$ linear equations in $n$ unknowns:
+
+\[
+Ax=b
+\]
+
+\noindent
+where
+
+\begin{itemize}
+\item{$A$ is an $n \times n$ nonsingular matirx, and}
+\item{$x$ and $b$ are column vectors with $n$ entries.}
+\end{itemize}
+
+That is, given $A$ and $b$, solve for $x$ in
+
+\begin{eqnarray*}
+a_{11}x_1 +a_{12}x_2+ \dotsb +a_{1n}x_n &=&b_1 \\
+a_{21}x_1 +a_{22}x_2+ \dotsb +a_{2n}x_n &=&b_2 \\
+\vdots \\
+a_{n1}x_1 +a_{n2}x_2+ \dotsb +a_{nn}x_n &=&b_n
+\end{eqnarray*}
+
+\noindent
+or
+
+\[
+\begin{bmatrix}
+    a_{11}       & a_{12} & \dots & a_{1n} \\
+    a_{21}       & a_{22} & \dots & a_{2n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    a_{n1}       & a_{n2} & \dots & a_{nn}
+\end{bmatrix}
+\begin{bmatrix}
+    x_{1} \\
+    x_{2}  \\
+    \vdots \\
+    x_{n} 
+\end{bmatrix}
+=
+\begin{bmatrix}
+    b_{1} \\
+    b_{2}  \\
+    \vdots \\
+    b_{n} 
+\end{bmatrix}
+\]
+
+
+You can apply any of the following 3 elementary row operations to $Ax=b$ without
+changing the solution.
+
+\begin{enumerate}[i]
+  \item multiply any equation $E_i$ by a nonzero constant $\lambda$
+  \item replace equation $E_i$ by $E_i + \lambda E_j$
+  \item interchange any two equations $E_i$ and $E_j$
+\end{enumerate}
+
+{\bf Naive Gaussian Elimination} uses operation ii only to do the following:
+\begin{enumerate}
+  \item reduce the coefficient matrix $A$ to upper triangular form - {\bf forward elimination}
+  \item solve the reduced matrix for $x$ - {\bf back-substitution}
+\end{enumerate}
+
+ \subsection{Example 1}
+Solve for the following system of linear equations, with $n=3$, using Naive Gaussian Elimination.
+\begin{eqnarray*}
+x_1+x_2-x_3 &=& -2\\
+2x_1-x_2+3x_3 &=& 14 \\
+-x_1-2x_2+x_3 &=& 3
+\end{eqnarray*}
+
+Here, the augmented matrix $[A|b]$ is
+
+\[
+\begin{bmatrix}[rrr|r]
+    1 & 1 & -1 & -2 \\
+    2 & -1 & 3 & 14 \\
+    -1 & -2 & 1 & 3
+\end{bmatrix}
+\]
+
+{\bf Forward elimination:}
+
+We want $a_{21}=a_{31}=0$, so let $m_{21}=a_{21}/a_{11}=2$ and $m_{31}=a_{31}/a_{11}=-1$. Then,
+
+\[
+E_2=E_2-m_{21}E_1
+\]
+\[
+E_3=E_3-m_{31}E_1
+\]
+
+so
+
+\begin{align*} 
+&a_{21}=a_{21}-m_{21}a_{11}=2-2(1)=0 \\
+&a_{22}=a_{22}-m_{21}a_{12}=-1-2(1)=-3 \\
+&a_{23}=a_{23}-m_{21}a_{13}=3-2(-1)=5 \\
+&b_2=b_2-m_{21}b_1=14-2(-2)=18
+\end{align*}
+and
+\begin{align*} 
+&a_{31}=a_{31}-m_{31}a_{11}=-1-(-1)(1)=0 \\
+&a_{32}=a_{32}-m_{31}a_{12}=-2-(-1)(1)=-1 \\
+&a_{33}=a_{33}-m_{31}a_{13}=1-(-1)(-1)=0 \\
+&b_3=b_3-m_{31}b_1=3-(-1)(-2)=1
+\end{align*}
+
+Thus, the augmented matrix is now
+
+\[
+\begin{bmatrix}[rrr|r]
+    1 & 1 & -1 & -2 \\
+    0 & -3 & 5 & 18 \\
+    0 & -1 & 0 & 1
+\end{bmatrix}
+\]
+
+Now, let $m_{32}=a_{32}/a_{22}=1/3$ and do $E_3=E_3-m_{32}E_2$.
+
+\begin{align*} 
+&a_{31}=a_{31}-m_{32}a_{21}=0-(1/3)(0)=0 \\
+&a_{32}=a_{32}-m_{32}a_{22}=-1-(1/3)(-3)=0 \\
+&a_{33}=a_{33}-m_{32}a_{23}=0-(1/3)(5)=-5/3 \\
+&b_3=b_3-m_{32}b_2=1-(1/3)(18)=-5
+\end{align*}
+
+So, finally in upper triangular form the final augmented matrix is
+
+\[
+\begin{bmatrix}[rrr|r]
+    1 & 1 & -1 & -2 \\
+    0 & -3 & 5 & 18 \\
+    0 & 0 & -5/3 & -5
+\end{bmatrix}
+\]
+
+{\bf Back substitution:}
+We now solve for $x_1$, $x_2$, and $x_3$ using back substitution.
+
+\begin{align*} 
+&-5/3x_3=-5 \Rightarrow x_3=\frac{-5}{-5/3}=3 \\
+&-3x_2+5x_3=18 \Rightarrow -3x_2+5(3)=18 \Rightarrow -3x_2=3 \Rightarrow x_2=-1 \\
+&x_1+x_2-x_3=-2 \Rightarrow x_1=-2-(-1)+3 \Rightarrow x_1=2
+\end{align*}
+
+Therefore,
+
+\[
+x =
+\begin{bmatrix}[r]
+    2 \\
+    -1 \\
+    3
+\end{bmatrix}
+\]
+
+{\bf In General:}
+After forward elimination we have the augmented matrix
+
+\[
+\begin{bmatrix}[cccc|c]
+    a_{11}       & a_{12} & \dots & a_{1n} & b_1 \\
+    0       & a_{22}^{(1)} & \dots & a_{2n}^{(1)} & b_2^{(1)} \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0       & 0 & \dots & a_{nn}^{(n-1)} & b_n^{(n-1)}
+\end{bmatrix}
+\]
+
+and then we back-substitute
+
+\[
+x_n = \frac{b_n^{(n-1)}}{a_{nn}^{(n-1)}}, x_i = \frac{b_i^{(i-1)} - \sum_{j=i+1}^{n} a_{ij}^{(i-1)}x_j}{a_{ii}^{(i-1)}}
+\]
+
+
+{\bf Notes:}
+\begin{enumerate}
+\item{When implemented we overwrite $A$ and $b$, thus no need for the superscripts.}
+\item{Don't need to calculate, nor store the lower $0$'s.}
+\item{The entries $a_{11}, a_{22}^{(1)}, a_{33}^{(2)}, ..., a_{n-1,n-1}^{(n-2)}$ are called the \underline{pivots}. 
+They are the denominators in the multipliers - \underline{must be nonzero}}.
+\end{enumerate}
+
+\section{Pseudocode for Naive Gaussian Elimination} 
+
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\FOR{$k=1$ to $n-1$}
+\FOR{$i=k+1$ to $n$}
+\STATE $factor = a_{i,k} / a_{k,k}$
+\FOR{$j=k+1$ to $n$}
+\STATE $a_{i,j} = a_{i,j} - factor \times a_{k,j}$
+\ENDFOR 
+\STATE $b_i = b_i - factor \times b_k$
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\caption{pseudocode for the calculation of forward elimination}
+\label{alg:seq}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+\begin{algorithmic}[1]
+\STATE $x_n = b_n / a_{n,n}$
+\FOR{$i=n-1$ to $1$}
+\STATE $sum = b_i$
+\FOR{$j=i+1$ to $n$}
+\STATE $sum = sum - a_{i,j} \times x_j$
+\ENDFOR 
+\STATE $x_i = sum / a_{i,i}$ 
+\ENDFOR
+\end{algorithmic}
+\caption{pseudocode for the calculation of back substitution}
+\label{alg:seq}
+\end{algorithm}
+
+
+\section{Counting floating point operations} 
+
+The most common measure of the efficiency of algorithms for solving
+linear systems $Ax =b$ is a floating-point operation (flop)
+count. This is determined as a function of $n$, the order of the matrix
+$A$.
+
+The analysis uses the following identities: 
+\begin{align*} 
+\sum_{i=1}^{m} i = 1 + 2 + 3 + \dots + i = \frac{m(m+1)}{2} \\ 
+\sum_{i=1}^{m} i^2 = 1^2 + 2^2 + 3^2 + \dots + i^2 = \frac{m(m+1)(2m+1)}{6}
+\end{align*} 
+
+Analysis of the Naive Gaussian Elimination algorithm: count the number
+of floating point add/subtracts and multiplies/divides.
+
+The forward elimination iterates over the rows of the matrix to
+calculate the factors (or multipliers) and each time there is one less
+row to consider. Therefore the number of divides is:
+\[
+(n-1) + (n-2) + \dots + 1 = \sum_{i=1}^{n-1} i = \frac{(n-1)n}{2} 
+\]
+
+For each one of these multipliers all the entries in the corresponding
+row (except the zeros) are subtracted and multiplies. Therefore 
+the number of subtractions and the number of multiplications are both: 
+
+\[
+(n-1)^2 + (n-2)^2 + \dots + 1^2 = \sum_{i=1}^{n-1} i^2 = \frac{(n-1)(n)(2n-1)}{6}
+\]
+
+We also have to do the corresponding subtracts and multiplies for $b$ both of which are: 
+
+\[
+(n-1) + (n-2) + \dots + (1) = \frac{(n-1)n}{2}
+\]
+
+Therefore the forward elimination totals are: 
+\begin{align*} 
+\mbox{number of mult/div} = \frac{2n^3 + 3n^2 -5n}{6} \\ 
+\mbox{number of add/sub} = \frac{2n^3 - 2n}{6}
+\end{align*} 
+
+{\bf Back Substitution}
+We have one initial division followed by: 
+\begin{align*}
+ \mbox{number of subtracts} = 1 + 2 + \dots + (n-1) = \frac{(n-1)n}{2} \\ 
+\mbox{number of multiplies} = 1 + 2 + \dots + (n-1) = \frac{(n-1)n}{2}
+\end{align*} 
+\noindent 
+with the last number of divides being $n-1$. 
+
+Therefore for back substituion the total is: 
+\begin{align*}
+\mbox{number of mult/div } = \frac{n^2-n}{2} \\ 
+\mbox{number of add/sub } = \frac{n^2-n}{2}
+\end{align*}
+
+{\bf Discussion} 
+The purpose of the flop count is to give a measure of how computation
+time increases as the problem size $n$ increases. For example, it can
+help us determine that the forward elimination is much more time
+consuming than the back substitution. 
+
+For {\bf Forward elimination} we have
+\[
+\approx \frac{n^3}{3} + \frac{n^3}{3} = \frac{2n^3}{3} \mbox{flops} 
+\] 
+\noindent 
+The notation $O(n^3)$ is used to indicate the order of increase with problem size without taking into account the constants. 
+
+For {\bf Back substitution} we have 
+\[
+\frac{n^2 - n}{2} + \frac{n^2-n}{2} + 1 + (n-1) = n^2 
+\]
+
+For example, a $2n \times 2n$ linear system requires about 8 times the computation time than an $n \times n$ linear system 
+as the cost of the forward elimination step would be 
+\[
+\frac{2(2n)^3}{3} = 8(\frac{2n^3}{3}).
+\]
+
+\section*{Appendix} 
+
+Carl Friedrich Gauss (1777-1855) was an infant prodigy. Gauss enjoyed numerical computation as a child. One day, in order to keep
+the class occupied, the teacher has the students add up all the numbers from one to a hundred, with instructions that each should place their slate
+on the table in front of them when they are done. Almost immediately Gauss placed his slate on the table. Guass got the answer correct, 5050, by mentally
+figuring out that the sum is equal to $100 \times 101/2$. Note that this is the summ identity $\sum_{i=1}^{n} i = 1 + 2 + 3 + \dots + i = \frac{n(n+1)}{2}$.
+
+\end{document}
+
+

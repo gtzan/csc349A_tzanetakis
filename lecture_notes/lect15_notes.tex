@@ -1,0 +1,344 @@
+\documentclass [titlepage,12pt,letter] {article}
+\pagestyle{myheadings}
+
+
+\usepackage{graphicx} 
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{fancyhdr}
+\usepackage{url} 
+\usepackage{amsmath}
+\usepackage{algorithm} 
+\usepackage{algorithmic}
+\usepackage{gensymb}
+\usepackage{breqn}
+\pagestyle{fancy}
+
+
+
+\fancyhead{}
+\fancyfoot{}
+			
+\lhead{CSC349A Lecture Notes}
+\rhead{Little, Rich}
+
+
+\setcounter{page}{1}
+\cfoot{\thepage}
+
+
+
+
+\begin{document} 
+
+
+These are the lecture notes for CSC349A Numerical Analysis taught by
+Rich Little. They roughly correspond to
+the material covered in each lecture in the classroom but the actual
+classroom presentation might deviate significantly from them depending
+on the flow of the course delivery. They are provide as a reference to
+the instructor as well as supporting material for students who miss
+the lectures. They are simply notes to support the lecture so the text
+is not detailed and they are not thoroughly checked. Use at your own
+risk. They are complimentary to the handouts. Many thanks to all the
+guidance and materials I received from Dale Olesky who has taught this
+course for many years and George Tzanetakis.
+
+\section{Barycentric Lagrange Interpolation}
+
+Lagrange can suffer from round-off error instability due to the number of computations, but there is a form of Lagrange where we can reduce the number of computations significantly. Recall, given ${(x_i,f(x_i))}, 0 \leq i \leq n$, 
+\begin{align*}
+P(x) &= \sum_{i=0}^{n} L_i(x) f(x_i)
+\end{align*}
+where
+\begin{align*}
+L_i(x) &= \prod_{j=0,j \neq i}^{n} \frac{x-x_j}{x_i-x_j}, \;\;\; \mbox{for } i=0,1,2,\dots,n 
+\end{align*}
+
+Note,
+\begin{align*}
+L_i(x) &= \prod_{j=0,j \neq i}^{n} \frac{x-x_j}{x_i-x_j} \\
+&= \prod_{j=0,j \neq i}^{n} \frac{x-x_j}{x_i-x_j} \cdot \frac{x-x_i}{x-x_i} \\
+&= \prod_{j=0}^{n} (x-x_j) \cdot \prod_{j=0,j \neq i}^{n} \frac{1}{x_i-x_j} \cdot \frac{1}{x-x_i} \\
+&= \prod_{j=0}^{n} (x-x_j) \cdot \frac{1}{\prod_{j=0,j \neq i}^{n}(x_i-x_j)} \cdot \frac{1}{x-x_i}
+\end{align*}
+
+Let $L(x)=\prod_{j=0}^{n} (x-x_j)$ and $w_i=\frac{1}{\prod_{j=0,j \neq i}^{n}(x_i-x_j)}$, for each $i=0,1,2,\dots,n$, then
+\begin{align*}
+L_i(x) &=L(x)\frac{w_i}{x-x_i}, \;\;\; \mbox{for } i=0,1,2,\dots,n
+\end{align*}
+and
+\begin{align*}
+P(x) &= L(x)\sum_{i=0}^{n} \frac{w_i}{x-x_i} f(x_i)
+\end{align*}
+Note, if $x=x_i$, then $P(x_i)=f(x_i)$ so there is no need to calculate. Just test for $x_i$ in computation.
+
+\subsection{Example 1}
+Evaluate $\ln(2)$ using Lagrange polynomial interpolation, given that
+\begin{align*}
+\ln{1} &= 0 \\
+\ln 4 &= 1.386294 \\
+\ln 6 &= 1.791760
+\end{align*}
+
+\noindent
+Here, $x_0 = 1, x_1=4, x_2=6$ and $f(x_0)=0, f(x_1)=1.386294, f(x_2)=1.791760$, (Note: this is example 3 from previous lecture again). We calculate $L(x)$ and each $w_i$ and then construct $P(x)$.
+
+\begin{align*}
+&L(x)=(x-x_0)(x-x_1)(x-x_2)=(x-1)(x-4)(x-6) \\
+&w_0=\frac{1}{(x_0-x_1)(x_0-x_2)}=\frac{1}{(1-4)(1-6)}=\frac{1}{15} \\
+&w_1=\frac{1}{(x_1-x_0)(x_1-x_2)}=\frac{1}{(4-1)(4-6)}=-\frac{1}{6} \\
+&w_2=\frac{1}{(x_2-x_0)(x_2-x_1)}=\frac{1}{(6-1)(6-4)}=\frac{1}{10}
+\end{align*}
+
+So,
+
+\begin{align*}
+P(x) &= L(x)\sum_{i=0}^{n} \frac{w_i}{x-x_i} f(x_i) \\
+&=(x-1)(x-4)(x-6)\left[\frac{\frac{1}{15}(0)}{x-1}+\frac{-\frac{1}{6}(1.386294)}{x-4}+\frac{\frac{1}{10}(1.79176)}{x-6}\right] \\
+&=(x-1)(x-4)(x-6)\left[\frac{-0.231049}{x-4}+\frac{0.179176}{x-6}\right]
+\end{align*}
+
+and thus,
+
+\begin{align*}
+P(2) &= (2-1)(2-4)(2-6)\left[\frac{-0.231049}{2-4}+\frac{0.179176}{2-6}\right] \\
+  &= (1)(-2)(-4)\left[\frac{-0.231049}{-2}+\frac{0.179176}{-4}\right] \\
+  &= 0.565844
+\end{align*}
+
+\section{Finding the coefficients of the interpolating polynomial} 
+
+Although the Langrange polynomial is well-suited to solving intermediate values it does not give you a polynomial in simple form
+\[
+P(x) = a_0 + a_1x + \dotsm + a_nx^n
+\]
+
+The coefficients of such an interpolating polynomial can be determined by solving a system of linear equations.
+
+Given a function $f(x)$ and distinct points $x_0, x_1, ..., x_n$, let $P(x)$ be the polynomial of degree $\leq n$ for which $P(x_i) = f(x_i)$ for $i=0,1,...,n$.
+
+Then,
+\begin{eqnarray*}
+a_0 + a_1x_0 + \dotsb + a_nx_0^n &=& f(x_0) \\
+a_0 + a_1x_1 + \dotsb + a_nx_1^n &=& f(x_1) \\
+\vdots \\
+a_0 + a_1x_n + \dotsb + a_nx_n^n &=& f(x_n)
+\end{eqnarray*}
+
+In matrix form, solve
+
+\[
+\begin{bmatrix}
+    1       & x_0 & \dots & x_0^n \\
+   1       & x_1 & \dots & x_1^n \\
+    \vdots & \vdots & \ddots & \vdots \\
+   1       & x_n & \dots & x_n^n
+\end{bmatrix}
+\begin{bmatrix}
+    a_0 \\
+    a_1  \\
+    \vdots \\
+    a_n 
+\end{bmatrix}
+=
+\begin{bmatrix}
+   f(x_0) \\
+  f(x_1)  \\
+    \vdots \\
+    f(x_n) 
+\end{bmatrix}
+\]
+
+So, if $n=2$, we let $P(x) = a_0 + a_1x + a_2x^2$ and solve
+
+\[
+\begin{bmatrix}
+    1       & x_0 &  x_0^2 \\
+   1       & x_1 &  x_1^2 \\
+   1       & x_2 &  x_2^2
+\end{bmatrix}
+\begin{bmatrix}
+    a_0 \\
+    a_1  \\
+    a_2 
+\end{bmatrix}
+=
+\begin{bmatrix}
+   f(x_0) \\
+  f(x_1)  \\
+    f(x_2) 
+\end{bmatrix}
+\]
+
+\subsection{Example 1} Let $f(x) = \sin x$, $x_0 = 0.2$, $x_1 = 0.5$, and $x_2 = 1$ and find the interpolating polynomial. Here, we want to solve the following system,
+
+\[
+\begin{bmatrix}
+    1       & 0.2 &  (0.2)^2 \\
+   1       & 0.5 &  (0.5)^2 \\
+   1       & 1 & 1^2
+\end{bmatrix}
+\begin{bmatrix}
+    a_0 \\
+    a_1  \\
+    a_2 
+\end{bmatrix}
+=
+\begin{bmatrix}
+   \sin(0.2) \\
+  \sin(0.5)  \\
+    \sin(1) 
+\end{bmatrix}
+\]
+
+I solved this in MATLAB using the following commands,
+
+\begin{verbatim}
+>> A=[1 .2 (.2)^2; 1 .5 (.5)^2; 1 1 1]
+
+A =
+
+    1.0000    0.2000    0.0400
+    1.0000    0.5000    0.2500
+    1.0000    1.0000    1.0000
+
+>> b=[sin(.2);sin(.5);sin(1)]
+
+b =
+
+    0.1987
+    0.4794
+    0.8415
+
+>> X=linsolve(A,b)
+
+X =
+
+   -0.0150
+    1.1211
+   -0.2647
+\end{verbatim}
+
+Note, I get the same result with
+
+\begin{verbatim}
+>> X=A\b
+
+X =
+
+   -0.0150
+    1.1211
+   -0.2647
+\end{verbatim}
+
+This implies that the interpolating polynomial is \[P(x)=-0.0150+1.1211x-0.2647x^2\]
+
+\section{Uniqueness} 
+An interpolating polynomial can be specified in many different forms. For example the form 
+can be $a(x-x_2)^2 + b(x-x_2) + c$ or using the Lagrange form for $n=2$: 
+\begin{align*}
+P(x) &= L_0(x) f(x_0) + L_1(x) f(x_1) + L_2(x) f(x_2) \\
+     &= \frac{(x-x_1)(x-x_2)}{(x_0 - x_1)(x_0-x_2)}f(x_0) + \frac{(x-x_0)(x-x_2)}{(x_1-x_0)(x_1-x_2)} f(x_1) + \frac{(x-x_0)(x-x_1)}{(x_2-x_0)(x_2-x_1)}f(x_2) 
+\end{align*} 
+\noindent 
+or simply as $P(x) = Ax^2 + Bx + C$. 
+
+We will show that all of these forms are identical as the interpolating polynomial is unique.  
+
+{\bf Theorem:} Given any $n+1$ distinct points $x_0, x_1, \dots, x_n$ and any $n+1$ values 
+$f(x_0), f(x_1), \dots, f(x_n)$, there exists a unique polynomial $P(x)$ of degree $\leq n$ such that 
+\[
+P(x_i) = f(x_i) \mbox{ for } 0 \leq i \leq n
+\]
+\noindent 
+{\bf Proof:} \\
+{\it Existence:} by construction of the Lagrange interpolating polynomial 
+\\
+{\it Uniqueness:} 
+
+Suppose there exist two polynomials $P(x)$ and $Q(x)$ of degree $\leq n$ such that: 
+\[
+P(x_i) = Q(x_i) = f(x_i), 0\leq i \leq n 
+\]
+\noindent 
+Consider the function 
+\[
+R(x) = P(x) - Q(x)
+\]
+\noindent 
+which is also a polynomial of degree $\leq n$. 
+But $R(x_i) = 0$ for $0 \leq i \leq n$. That is $R(x)$ has 
+$n+1$ distinct zeros. This implies that $R(x) = 0$ for all $x$ 
+and therefore $P(x) = Q(x)$. 
+
+\section{Error term of polynomial interpolation} 
+\noindent 
+{\bf Theorem:} \\ 
+Let $x_0, x_1, \dots x_n$ be any distinct points in $[a,b]$. Let $f(x) \in C^{n+1} [a,b]$ and let 
+$P(x)$ interpolate $f(x)$ at ${x_i}$. 
+
+Then for each $\hat x \in [a,b]$, there exists a value $\xi$ in $(a,b)$ such that 
+\[
+f(\hat x) = P(\hat x) + \frac{f^{(n+1)}(\xi)}{(n+1)!} \prod_{i=0}^{n} (\hat x - x_i)
+\]
+for example for $n=3$ 
+\[
+f(\hat x) = P(\hat x) + \frac{f^{(4)}(\xi)}{24} (\hat x - x_0)(\hat x - x_1)(\hat x - x_2)(\hat x - x_3)
+\]
+
+\noindent 
+The limitation of this error bound for polynomial interpolation is the need to find an upper bound for 
+$f^{(n+1)}(x)$ on $[a,b]$. 
+
+\section{The Runge Phenomenon}
+
+The following example is the classical example to illustrate the oscillatory nature and thus the unsuitability of high order interpolating polynomials.
+
+{\bf Example:} Consider the problem of interpolating
+
+\[
+f(x)= \frac{1}{1+25x^2}
+\]
+
+\noindent
+on the interval $[-1,1]$ at $n+1$ equally-spaced points $x_i$ by the interpolating polynmial $P_n(x)$.
+
+
+
+\begin{figure} 
+  \centering
+  \includegraphics[scale=0.6]{runge}
+  \caption{The Runge function}
+  \label{fig:runge}
+\end{figure}
+
+
+{\bf Runge's Theorem:}
+\begin{itemize}
+\item{Runge proved that as $n \rightarrow \infty$, $P_n(x)$ diverges from $f(x)$ for all values of $x$ such that $0.726 \leq |x| < 1$ (except for the points of interpolation $x_i$).}
+\item{The interpolating polynomials do approximate $f(x)$ well for $|x|<0.726$.}
+\item{One way to see that the difference between $f(x)$ and $P_n(x)$ becomes arbitrarily large as $n$ becomes large is to consider the error term for polynomial interpolation
+\[
+f(x)-P_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!} \prod_{i=0}^{n} (x - x_i)
+\]
+\noindent
+As $n \rightarrow \infty$, it can be shown that $f(x)-P_n(x) \rightarrow \infty$ (at some points $x$ in $[-1,1]$).}
+\end{itemize}
+
+\end{document} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
