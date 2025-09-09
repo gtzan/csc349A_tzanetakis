@@ -1,0 +1,287 @@
+%% Fix Bayes example numbers 
+%% Fix KNN with different Ks figures 
+%% 
+%% 
+
+
+
+
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usetheme{Air}
+
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Leture 4]{Lecture 4}
+\date[2023]{2023}
+\author[R. Little]{Rich Little}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+
+
+\usepackage{amsmath}
+\usepackage{ulem}
+\usepackage{color,soul}
+
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+\section{Number systems}
+
+\begin{frame}{Round-off errors}
+
+Round-off errors originate from two factors:
+
+\begin{itemize}
+\item{finite representations of possibly infinitely long numbers}
+\item{finite range of values from a possibly infinite range}
+\end{itemize}
+
+All dependent on the {\it word size} - maximum size of the string of bits used.
+
+\end{frame}
+
+\begin{frame}{Number systems}
+\begin{itemize}
+\item{\underline{\bf Decimal:}}
+\begin{itemize}
+\item{base-10}
+\item{digits: 0,1,2,3,4,5,6,7,8,9}
+\item{powers of 10 positional system}
+\item{Ex: 86409}
+\end{itemize}
+\end{itemize}
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Number systems}
+\begin{itemize}
+\item{\underline{\bf Binary:}}
+\begin{itemize}
+\item{base-2}
+\item{digits: 0,1}
+\item{powers of 2 positional system}
+\item{Ex: 101011}
+\end{itemize}
+\end{itemize}
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Dec-Bin Conversion}
+\begin{itemize}
+\item{Convert $185_{10}$ to binary}
+\end{itemize}
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Computer representation}
+\begin{itemize}
+\item{Positive integers}
+\begin{itemize}
+\item{What we can represent depends on the word size}
+\item{Ex: 8-bits, then $43_{10}$ = $00101011_{2}$}
+\item{What is the range? $2^8=256$ values from 0 to $2^8 - 1$}
+\item{Ex: 16-bits, then $43_{10}$ = $0000000000101011_{2}$}
+\item{What is the range? $2^{16}=65,536$ values from 0 to $2^{16} - 1$}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Computer representation}
+\begin{itemize}
+\item{Negative integers}
+\begin{itemize}
+\item{Signed magnitude method - use leftmost bit for the sign}
+\item{usually 0 for '+' and 1 for '-'}
+\item{Ex: 8-bits, then $-43_{10}$ = $10101011_{2}$}
+\item{What is the range? only 7 bits so 128 values with a lead 0 and 128 with a lead 1}
+\item{But, two of them - 10000000 and 00000000 - represent the same number, 0}
+\item{We usually let 10000000 = -128 giving the range -128 to 127}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Real numbers - Decimal}
+\begin{itemize}
+\item{How do we interpet real numbers in decimal?}
+\item{Ex: Consider 82.3801}
+\vspace{3 in}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Real numbers - Binary}
+\begin{itemize}
+\item{What about in binary?}
+\item{Ex: Consider 101.1101}
+\vspace{3 in}
+\item{Going from decimal to binary with real numbers?}
+\vspace{1 in}
+\item{Now, how do we represent them in a computer?}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Real numbers - Conversion}
+\begin{itemize}
+\item{Going from decimal to binary with real numbers?}
+\vspace{2 in}
+\item{Now, how do we represent them in a computer?}
+\end{itemize}
+\end{frame}
+
+
+\section{Floating-point numbers}
+
+\begin{frame}{Floating-point number system} 
+\begin{itemize}
+
+\item{A floating-point number system is a finite approximation to the
+(infinite) real/complex number system, of the form:
+
+\begin{equation} 
+\pm m \times b ^ e 
+\end{equation}} 
+
+\item{The $m$ is called the {\it \bf mantissa}, $b$ is the {\it \bf base} and
+$e$ is the {\it \bf exponent}.}
+
+\end{itemize}
+\vspace{1 in}
+\end{frame}
+
+\begin{frame}{Floating-point representation} 
+\begin{itemize}
+
+\item{How do we store a floating-point number in a word?}
+\item{We take the component parts of the floating-point number, (sign, mantissa, exponent) and assign them to different sections of the word}
+\item{For example, take $\pm m \times b ^ e$ and put them into the word as follows:} 
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+ \hline
+ $s_m$ & $s_e$ & exponent & \hspace{0.25 in} mantissa \hspace{0.25 in} \\ 
+ \hline
+\end{tabular}
+\end{center}
+\vspace{1 in}
+\end{frame}
+
+
+\begin{frame}{Normalized floating-point number system} 
+\begin{itemize}
+
+\item{In normalized floating-point number systems real numbers are represented in the form: 
+
+\begin{equation} 
+\pm 0.d_1d_2d_3 \dots d_k \times b ^ e 
+\end{equation}}
+
+\item{Where the first digit of the {\it mantissa} should be non-zero, i.e. $ 1
+\leq d_1 \leq b-1$.} 
+\item{The remaining digits can be zero and are also
+constrained by the base, i.e. $ 0 \leq d_i \leq b-1$.}
+
+\item{Because $d_1 \neq 0$, $k$ is the number of significant digits in the mantissa, and is called
+the {\it precision} of the floating point system.} 
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example - IEEE 754}
+\begin{itemize}
+\item{binary32 is the single-precision floating point representation}
+\item{it uses a 32-bit word with 1 bit for the sign of the mantissa, $s_m$, 8 bits for the signed (biased by 127) exponent, and the remaining 23 bits for the mantissa}
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ $s_m$ & exponent & \hspace{0.65 in} mantissa \hspace{0.65 in} \\ 
+ \hline
+\end{tabular}
+\begin{tabular}{ ccc } 
+ $_{1 bit}$ & \hspace{0.15 in} $_{8 bits}$ \hspace{0.28 in} & \hspace{0.65 in} $_{23 bits}$ \hspace{0.65 in} \\ 
+\end{tabular}
+\end{center}
+\vspace{1 in}
+\begin{itemize}
+\item{this sytem has a precision of $k=24$, don't need to store the lead 1}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Errors in floating-point representation}
+
+There are a number of inherent errors in this system, some more obvious than others.
+
+\begin{itemize}
+\item{Large negative and positive numbers fall outside the finite range of the system (overflow).} 
+\item{Because of normalization, very small  (close to 0) negative and positive numbers fall outside the range (underflow).} 
+\item{Only a finite number of values can be represented in the range (round-off error)} 
+\item{The distance between two consecutive floating-point numbers increases as the numbers get larger}
+\end{itemize}
+\end{frame} 
+
+\begin{frame}{Ex: Hypothetical Floating-Point Computer}
+Suppose your computer uses a 7-bit word to represent normalized floating-point numbers as follows:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline 
+$s_m$ & $s_e$ & $e_1$ & $e_2$ & $b_1$ & $b_2$ & $b_3$ \\ 
+\hline 
+\end{tabular}
+\end{center}
+
+where $s_m$ is the sign of the mantissa and  $s_e$ is the sign of the exponent (0 for positive, 1 for negative), 
+$b_1,b_2,$ and $b_3$ are the bits of the mantissa, and $e_1,e_2$ are the bits 
+of the exponent.
+\end{frame}
+
+\begin{frame}{Example continued}
+\begin{enumerate}
+\item[(a)] What is the smallest positive non-zero number that can be represented in this system? What is it's value in decimal?
+\vspace{0.1 in}
+\item[(b)] What is the next smallest positive non-zero number that can be represented in this system? 
+\vspace{0.1 in}
+\item[(c)] What is the distance between the two values above? What does this value represent?
+\vspace{0.1 in}
+\item[(d)] Use (c) to predict the next value in decimal. Convert it to floating-point to test your answer.
+\vspace{0.1 in}
+\end{enumerate} 
+
+\end{frame} 
+
+
+
+
+\end{document}
+
