@@ -1,0 +1,27 @@
+\usetheme{Rochester}
+
+\RequirePackage{pgf}
+
+\pgfdeclareimage[width=1.0\paperwidth]{air-header}{air-header}
+
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamercovered{transparent}
+
+\beamer@headheight=0.13\paperwidth
+
+\definecolor{airorange}{rgb}{.953 ,.502 ,.04}
+\definecolor{airdarkblue}{HTML}{064F6F}
+\definecolor{airlightblue}{HTML}{0099d5}
+\definecolor{airgray}{HTML}{686868}
+\definecolor{airlightgray}{HTML}{eeeeee}
+\definecolor{airblue}{rgb}{.13 ,.43 ,.68}
+\setbeamercolor*{Title bar}{fg=airdarkblue}
+\setbeamercolor*{Location bar}{fg=airorange,bg=airlightgray}
+\setbeamercolor*{frametitle}{parent=Title bar}
+\setbeamercolor*{block title}{bg=airlightblue,fg=white}
+\setbeamercolor*{block body}{bg=airlightgray,fg=airgray}
+\setbeamercolor*{normal text}{bg=white,fg=airgray}
+\setbeamercolor*{section in head/foot}{bg=airblue,fg=airdarkblue}
+
+\usecolortheme[named=airorange]{structure}
+

@@ -1,0 +1,340 @@
+%% Fix Bayes example numbers 
+%% Fix KNN with different Ks figures 
+%% 
+%% 
+
+
+
+
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Leture 3]{Lecture 3}
+\date[2025]{2025}
+\author[George Tzanetakis]{George Tzanetakis}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+
+
+\section{Approximations and Measuring Errors} 
+
+\begin{frame}{Types of error}
+\begin{itemize} 
+\item{{\bf Formulation or modeling error}  arises because of
+    incomplete mathematical models. For example, the simplified
+    parachutist model we described will never exactly predict the
+    motion of a real parachutist.}
+
+\item{{\bf Data uncertainty/inherent erorr} Noisy data due to inexact
+    measurements or observation.}
+
+\item{{\bf Truncation error (Chapter 4)} results from using inexact approximations
+    instead of an exact mathematical procedure such as the errors
+    between the Euler method numerical procedure for predicting
+    velocity versus the analytical solution obtained through
+    differential calculus.}
+
+\item{{\bf Roundoff error (Chapter 3)} is due to the fixed, finite
+    precision representations used to represent real/complex numbers
+    in computers.}
+
+
+\end{itemize} 
+\end{frame}
+
+
+\begin{frame}{Ways to measure error}
+\begin{itemize} 
+\item{{\bf Significant digits} The digits of a number that can be used with confidence}
+\vspace{\baselineskip}
+\item{{\bf Absolute error} Difference between actual value and approximation}
+\vspace{\baselineskip}
+\item{{\bf Relative error} Normalized absolute error}
+\vspace{\baselineskip}
+\item{{\bf True error} Error when actual value is known}
+\vspace{\baselineskip}
+\item{{\bf Approximate error} Error when actual value is unknown}
+
+\end{itemize} 
+\end{frame}
+
+\begin{frame}{Significant Digits (or Figures)}
+\begin{itemize}
+\item{We use significant digits in two contexts in this course.}
+\item{In your experience you relate this term to the number of digits that you are using in a calculation. This is akin to roundoff error here.}
+\item{We also use this term to denote the number of digits that are correct in an approximation, as in truncation error. They are really one and the same.}
+\item{We don't count lead zeroes on the left of the radix point nor end zeroes on the right.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Significant Digits Examples}
+
+{\bf Example 1} - For each of the following, determine the number of significant digits.
+\begin{enumerate}
+\item[(a)]{Let $p=13.685312$ and $p^*=13.69$.}
+\vspace{0.5 in}
+\item[(b)]{Let $p=1234321$ and $p^*=1234000$.} 
+\vspace{0.5 in}
+\item[(c)]{Let $p=0.001234$ and $p^*=0.001111$.}
+\vspace{0.5 in}
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Absolute Error}
+
+If $p$ denotes the true (exact) value of some quantity, and $p^{*}$
+denotes some approximation to $p$ then the {\bf absolute true error}
+is defined as:
+
+\begin{equation} 
+|E_{t}| = | p - p ^{*}|
+\end{equation} 
+
+The absolute error only makes sense if you have a sense of the
+magnitude of $p$, the quantity you are approximating.
+
+
+\end{frame}
+
+\begin{frame}{Absolute Error Examples}
+
+{\bf Example 2} - For each of the following, determine the absolute error.
+\begin{enumerate}
+\item[(a)]{Let $p=13.685312$ and $p^*=13.69$.}
+\vspace{0.5 in}
+\item[(b)]{Let $p=1234321$ and $p^*=1234000$.} 
+\vspace{0.5 in}
+\item[(c)]{Let $p=0.001234$ and $p^*=0.001111$.}
+\vspace{0.5 in}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Relative Error} 
+
+A better approach is to introduce the concept of relative error, in
+which the magnitude of the exact value $p$ is used to ``normalize''
+the error. More specifically the {\bf relative error} is defined as: 
+
+\begin{equation} 
+|\varepsilon_{t}| = \frac{|p - p^{*}|}{|p|} = |1 - \frac{p^{*}}{p}| 
+\end{equation} 
+
+\end{frame} 
+
+\begin{frame}{Relative Error Examples}
+
+{\bf Example 3} - For each of the following, determine the relative error.
+\begin{enumerate}
+\item[(a)]{Let $p=13.685312$ and $p^*=13.69$.}
+\vspace{0.5 in}
+\item[(b)]{Let $p=1234321$ and $p^*=1234000$.} 
+\vspace{0.5 in}
+\item[(c)]{Let $p=0.001234$ and $p^*=0.001111$.}
+\vspace{0.5 in}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Significant Digits vs. Relative Error} 
+The {\it significant digits} is a discrete way of measuring error in
+approximations in contrast to the relative error which is a continuous
+way of measuring error in approximation. 
+\end{frame}
+
+\begin{frame}{Significant Digits vs. Relative Error Example } 
+
+{\bf Example 4} - Let $p = \pi = 3.14159265 \dots$ and approximate it with $p_1=3.1$, $p_2=3.14$, etc., and compare relative error to significant digits for each.
+
+\vspace{3 in}
+\end{frame}
+
+\begin{frame}{Significant Digits vs. Relative Error Example } 
+
+{\bf Example 4} - Let $p = \pi = 3.14159265 \dots$ and approximate it with $p_1=3.1$, $p_2=3.14$, etc., and compare relative error to significant digits for each.
+
+\vspace{0.5 in}
+
+\begin{table} 
+\begin{tabular}{|c|c|l|}
+\hline 
+approximations & number of significant digits & relative error
+\\
+\hline
+3.1                   & 2       & 0.013 \\
+\hline 
+3.14                 & 3       & 0.00051 \\ 
+\hline 
+3.141               & 4       & 0.00019 \\ 
+\hline 
+3.1415             & 5       & 0.000029 \\ 
+\hline 
+\end{tabular} 
+\end{table} 
+
+\vspace{0.5 in}
+
+\end{frame}
+
+\begin{frame}{Relative error and significant digits} 
+
+Frequently it is useful to relate the relative error to the number of
+correct significant digits. This can be done with the
+following: If
+
+\begin{equation} 
+|\varepsilon_{t} | < 5 \times 10 ^ {-n} 
+\end{equation} 
+
+\noindent 
+then $p*$ approximates $p$ to {\bf $n$ significant digits}. 
+\end{frame} 
+
+\begin{frame}{When the true value is unknown} 
+In order to calculate the relative or absolute error of a particular
+quantity we need to know the value of the approximation $p^*$ as well
+as the true value $p$. In many cases we don't know the true value. 
+In fact numerical methods in engineering are used when we don't know
+the true value otherwise we could just simply use it instead of
+computing a numeric approximation. 
+
+There are many algorithms in numerical methods that operate in an
+iterative function in which an estimate of the solution is used to compute 
+a better estimate and the process is repeated until some convergence
+criterion is met. In this cases it is common to use our best current
+estimate of the true value (i.e the previous estimate) to compute the
+error compared to the current estimate. 
+\end{frame}
+
+\begin{frame}{Approximation to relative error} 
+
+In this case of iterative algorithms we can use the following
+approximation to the relative errror: 
+
+\begin{equation} 
+|\varepsilon_{a}| = \frac{|p_i - p_{i-1}|}{|p_{i}|} 
+\end{equation} 
+
+Similarly
+we can use the following relation to conservatively estimate the number of
+significant digits for the relative error in iterative algorithms: If
+
+\begin{equation} 
+|\varepsilon_{a}| < 0.5 \times 10^{-n}
+\end{equation} 
+then $p_i$ is correct to {\it at least} $n$ significant digits.
+\end{frame} 
+
+\begin{frame}{Approximate Relative Error Example} 
+
+{\bf Example 5} - Mathematicians like to represent functions by infinite series. For
+example the exponential function can be computed using: 
+
+\begin{equation} 
+e^{x} \approx 1 + x + \frac{x^2}{2} + \frac{x^3}{3!} + \dots + \frac{x^{i}}{i!}
+\end{equation} 
+
+\noindent 
+As more terms are added to the series the approximation becomes better
+and better. This is called a McLaurin series expansion. Let $p_{0}
+=1$, $p_{1} = 1 + x$, $p_{2} = 1 + x + \frac{x^2}{2!}$ and so on. 
+
+\vspace{2 in}
+
+\end{frame} 
+
+\begin{frame}{An example continued} 
+
+
+\end{frame} 
+
+\begin{frame}{Approximate at different precisions}
+We can use this series approximation at different levels of precision 
+to compute the value of $e^x$ for $x = 0.5$. We can use the true value 
+$p = e^{0.5} = 1.648721 ..$ to compute the true relative error
+$|\varepsilon_{t}|$. 
+
+
+\begin{table} 
+\begin{tabular}{|c|l|l|l|} 
+\hline 
+i & $p_{i}$ & $|\varepsilon_{t}| = \frac{|e^{0.5} - p_{i}|}{|e^{0.5}|}$ &
+$|\varepsilon_{a}| = \frac{|p_{i} - p_{i-1}|}{|p_{i}|}$ \\
+\hline 
+0 & 1 & 0.393 & \\ 
+1 & 1.5 & 0.0902 & 0.333 \\ 
+2 & 1.625 & 0.0144 & 0.0769 \\ 
+3 & 1.645833 & 0.00175 & 0.0127 \\ 
+4 & 1.6484375 & 0.000172 & 0.00158 \\ 
+5 & 1.6486979 & 0.0000142 & 0.000158 \\ 
+\hline 
+
+
+\end{tabular} 
+\end{table} 
+
+\end{frame}
+
+
+\begin{frame} 
+Note that the value of $|\varepsilon_t|$, which can only be computed if
+we know the true (exact) answer $p$, can be used to estimate the
+number of correct significant digits in each approximation. For
+example: For $p_{2}$ we have $0.0144 < 5 \times 10^{-2}$ so the 
+approximation $p_{2} = 1.625$ has at least 2 correct significant digits. For
+$p_{4}$ we have $0.000172 < 5 \times 10^{-4}$ and therefore 
+$p_{4} = 1.6484375$ has at least 4 correct significant digits. 
+\end{frame}
+
+
+\begin{frame}{What happens when true value is unknown ?} 
+In practice, if a sequence of approximations to some unknown value 
+is computed using an iterative algorithm, (we will use several such
+algorithms during this course), then the exact relative error
+$|\varepsilon_{t}|$ can not be computed. However, the relative error in
+each approximation $p_i$ can be approximated by
+$|\varepsilon_{a}|$ and can be used to estimate conservatively the
+number of correct significant digits. For example for $i=5$ in the
+table above we have $|\varepsilon_{a}| = 0.000158 < 0.5 x 10^{-3}$ 
+implying that $p_{5} = 1.6486979$ has at least 3 correct significant
+digits (notice that in fact it has 4 which means this is a
+conservative estimate). 
+
+\end{frame} 
+
+
+\end{document}
+

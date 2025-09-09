@@ -1,0 +1,108 @@
+
+
+\documentclass[12pt]{beamer}
+\usepackage{xcolor}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usetheme{Air}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\title[CSC349A Numerical Analysis]{CSC349A Numerical Analysis}
+
+
+\logo{\pgfputat{\pgfxy(-0.5,7.5)}{\pgfbox[center,base]{\includegraphics[width=1.0cm]{figures/uvic}}}}  
+\beamertemplatenavigationsymbolsempty
+
+    \defbeamertemplate{footline}{author and page number}{%
+      \usebeamercolor[fg]{page number in head/foot}%
+      \usebeamerfont{page number in head/foot}%
+      \hspace{1em}\insertshortauthor\hfill%
+      \insertpagenumber\,/\,\insertpresentationendpage\kern1em\vskip2pt%
+    }
+    \setbeamertemplate{footline}[author and page number]{}
+
+
+
+\subtitle[Leture 2]{Lecture 2}
+\date[2025]{2025}
+\author[George Tzanetakis]{George Tzanetakis}
+\institute[University of Victoria]{University of Victoria}
+%\logo{\includegraphics[scale=.25]{unilogo.pdf}}
+\begin{document}
+\frame{\maketitle} % <-- generate frame with title
+
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>[allowframebreaks]{Table of Contents}
+\tableofcontents[currentsection,currentsubsection, 
+    hideothersubsections, 
+    sectionstyle=show/shaded,
+]
+\end{frame}
+}
+
+
+
+
+
+
+\section{Python} 
+
+\begin{frame}{Python}
+\begin{itemize} 
+\item{ Python - \url{https://www.spyder-ide.org/}}
+
+\begin{itemize}
+\item{Comes with Anaconda}
+\end{itemize}
+
+\item{NumPy - Use this package most}
+
+\begin{itemize}
+\item{numpy.array allows for the same vectorization as Matlab}
+\end{itemize}
+
+\item{Pyplot - Use this for graph plotting}
+
+\begin{itemize}
+\item{matplotlib.pyplot.plot}
+\end{itemize}
+
+\item{SciPy - Has some more advanced and efficeint scientific computation algorithms}
+
+\begin{itemize}
+\item{scipy.interpolate}
+\end{itemize} 
+\end{itemize} 
+\end{frame}
+
+
+
+
+
+\section{MATLAB(optional)} 
+
+\begin{frame}{MATLAB}
+\begin{itemize} 
+\item{ \url{https://matlab.engr.uvic.ca/student/}}
+
+\item{pgs. 28-40 - Elementary programming concepts and pseudocode}
+
+\item{pgs. 948-955 - Appendix B: Getting Started with MATLAB}
+
+\item{pgs. 44-48 - MATLAB and the free-falling example}
+
+\item{UVic MATLAB reference manual in Brightspace - Lecture 2 Sub-module.}
+
+\item{MATLAB = {\it MAT}rix {\it LAB}oratory}
+
+\item{The matrix is the fundamental data structure.}
+
+\item{MATLAB is {\it interpreted} NOT compiled.}
+
+\end{itemize} 
+\end{frame}
+
+\end{document}
+
